@@ -2,8 +2,9 @@ import time
 
 LEFT = 0
 RIGHT = 1
-
 DELAY = 0.01
+
+# TODO: Integrate into the Tape class
 class TapeIterator(object):
     def __init__(self, tape):
         self.tape = tape
@@ -19,7 +20,11 @@ class TapeIterator(object):
         value = self.tape[self.index]
         self.index += 1
         return value
-
+"""
+	This represents a tape, infinite in both directions.
+	Blank squares are represented by the None type.
+	Supports normal list indexing.
+"""
 class Tape(list):
     def __init__(self, pos=[], neg=[]):
         self.pos = pos
@@ -102,6 +107,9 @@ class Rule(object):
         self.newstate = newstate
         self.direction = direction
 
+    def __repr__(self):
+    	return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + ("L" if self.direction == LEFT else "R") + ")" 
+
 
 class LMachine(object):
     maxiter = 10000
@@ -149,6 +157,40 @@ class LMachine(object):
         print((self.position + abs(self.tape.negmin) + 1)*' ' + '^')
 
 
+def parse_machine(filename):
+
+	with open(filename, 'r') as f:
+		t = f.readline()
+		while t[0] == '#':
+			t = f.readline().strip()
+
+		if t == 'L':
+			startstate = f.readline().strip()
+			position = int(f.readline().strip())
+			pretape = f.readline().strip()
+			neg = [None if x == '`' else x for x in pretape[:position]]
+			pos = [None if x == '`' else x for x in pretape[position:]]
+			tape = Tape(pos, neg)
+			rules = {}
+			rule = f.readline()
+
+			while rule != '':
+				rule = rule.strip().split()
+				rules[(rule[0], None if rule[1] == '`' else rule[1])] = Rule(rule[3], None if rule[4] == '`' else rule[4], RIGHT if rule[5] == 'R' else LEFT)
+				rule = f.readline()
+
+			print(tape)
+			print(rules)
+			print(startstate)
+
+			return LMachine(rules, tape, startstate)
+
+
+
+m = parse_machine("machines/unaryadder.tm")
+m.run()
+
+"""
 u_rules = {}
 u_rules[('q0', 0)] = Rule('q0', 0, RIGHT)
 u_rules[('q0', 1)] = Rule('q1', 0, RIGHT)
@@ -247,3 +289,5 @@ b_add.run()
 #4326
 
 #52149
+
+"""
