@@ -1,8 +1,5 @@
 import time
 
-LEFT = 0
-RIGHT = 1
-DELAY = 0.01
 
 # TODO: Integrate into the Tape class
 class TapeIterator(object):
@@ -20,15 +17,20 @@ class TapeIterator(object):
         value = self.tape[self.index]
         self.index += 1
         return value
+
 """
-	This represents a tape, infinite in both directions.
-	Blank squares are represented by the None type.
-	Supports normal list indexing.
+    This represents a tape, infinite in both directions.
+    Blank squares are represented by the None type.
+    Supports normal list indexing.
 """
 class Tape(list):
-    def __init__(self, pos=[], neg=[]):
-        self.pos = pos
-        self.neg = neg
+    """
+    Input to the tape constructor is a string: one symbol per character.
+    Spaces represent blank squares.
+    """
+    def __init__(self, t=''):
+        self.pos = [None if v == ' ' else v for v in t]
+        self.neg = []
         self.negmin = self.last_filled_index(False)
         self.posmax = self.last_filled_index()
 
@@ -102,22 +104,23 @@ class Tape(list):
 
 
 class Rule(object):
-    def __init__(self, newstate='q0', newsym='e', direction=LEFT):
+    def __init__(self, newstate='q0', newsym='e', direction='L'):
         self.newsym = newsym
         self.newstate = newstate
         self.direction = direction
 
     def __repr__(self):
-    	return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + ("L" if self.direction == LEFT else "R") + ")" 
+        return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
 
 
 class LMachine(object):
     maxiter = 10000
-    def __init__(self, rules, tape=Tape(), start='q0', position=0):
-        self.tape = tape
-        self.state = start
+    def __init__(self, rules, start='q0'):
         self.rules = rules
-        self.position = position
+        self.start = start
+        self.state = start
+        self.tape = Tape()
+        self.position = 0
 
     def left(self):
         self.position -= 1
@@ -129,19 +132,22 @@ class LMachine(object):
         op = self.rules[(self.state, self.tape[self.position])]
         self.tape[self.position] = op.newsym
         self.state = op.newstate
-        if op.direction == LEFT:
+        if op.direction == 'L':
             self.left()
         else:
             self.right()
 
-    def run(self):
+    def run(self, tape, position=0, delay=0.01):
+        self.state = self.start
+        self.tape = tape
+        self.position = position
         i = 0
         while i < self.maxiter:
             i += 1
             try:
                 self.print_state()
                 self.advance()
-                time.sleep(DELAY)
+                time.sleep(delay)
             except Exception as e:
                 print(e)
                 break 
@@ -158,55 +164,40 @@ class LMachine(object):
 
 
 def parse_machine(filename):
+    with open(filename, 'r') as f:
+        t = f.readline()
+        while t[0] == '#':
+            t = f.readline().strip()
 
-	with open(filename, 'r') as f:
-		t = f.readline()
-		while t[0] == '#':
-			t = f.readline().strip()
+        if t == 'L':
+            startstate = f.readline().strip()
+            rules = {}
+            rule = f.readline()
 
-		if t == 'L':
-			startstate = f.readline().strip()
-			position = int(f.readline().strip())
-			pretape = f.readline().strip()
-			neg = [None if x == '`' else x for x in pretape[:position]]
-			pos = [None if x == '`' else x for x in pretape[position:]]
-			tape = Tape(pos, neg)
-			rules = {}
-			rule = f.readline()
+            while rule != '':
+                rule = rule.strip().split()
+                rules[(rule[0], None if rule[1] == '`' else rule[1])] = Rule(rule[3], None if rule[4] == '`' else rule[4], rule[5])
+                rule = f.readline()
 
-			while rule != '':
-				rule = rule.strip().split()
-				rules[(rule[0], None if rule[1] == '`' else rule[1])] = Rule(rule[3], None if rule[4] == '`' else rule[4], RIGHT if rule[5] == 'R' else LEFT)
-				rule = f.readline()
-
-			print(tape)
-			print(rules)
-			print(startstate)
-
-			return LMachine(rules, tape, startstate)
-
-
+            return LMachine(rules, startstate)
 
 m = parse_machine("machines/unaryadder.tm")
-m.run()
+m.run(Tape("0000100000"), delay=0.2)
 
+b_tape1 = Tape('|1000011100110,1011101011001111;')
+b_tape2 = Tape('|1101,11001;')
 b_add = parse_machine("machines/binaryadder.tm")
-b_add.run()
+b_add.run(b_tape1)
+#b_add.run(b_tape2)
 
-"""
-b_tape = Tape(pos=[1,1,0,1,',',1,1,0,0,1,';'],neg=['|'])
-b_tape2 = Tape(pos=[',',';'],neg=['|'])
-b_tape3 = Tape(pos=[1,',',';'],neg=['|'])
-b_tape4 = Tape(pos=[',',1,';'],neg=['|'])
-b_tape5 = Tape(pos=[0,',',';'],neg=['|'])
-b_tape6 = Tape(pos=[',',0,';'],neg=['|'])
-b_tape = Tape(pos=[1,0,0,0,0,1,1,1,0,0,1,1,0,',',1,0,1,1,1,0,1,0,1,1,0,0,1,1,1,1,';'],neg=['|'])
+b_tape3 = Tape("|,;")
+b_tape4 = Tape("|1,;")
+b_tape5 = Tape("|,1;")
+b_tape6 = Tape("|0,;")
+b_tape7 = Tape("|,0;")
 
-b_add = LMachine(b_rules, tape=b_tape, start='LSB1')
-b_add.run()
-#47823
-#4326
-
-#52149
-
-"""
+# b_add.run(b_tape3)
+# b_add.run(b_tape4)
+# b_add.run(b_tape5)
+# b_add.run(b_tape6)
+# b_add.run(b_tape7)"""

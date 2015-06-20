@@ -1,10 +1,8 @@
-# binary adder 
-# input tape must be of the form |num1num2;
-# result will be placed L of the | 
+# Binary Adder 
+# The input tape must be of the form "|m,n;" where m and n are binary strings.
+# The result will be placed left of the |. 
 L
 LSB1
-1
-|1000011100110,1011101011001111;
 LSB1 0 -> LSB1 0 R
 LSB1 1 -> LSB1 1 R
 LSB1 2 -> LSB1 2 R

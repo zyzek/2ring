@@ -2,6 +2,4 @@
 # comments may go at the start of the file, preceded by a # 
 type: L(inear) or P(lanar)
 start state
-start position: index of where the head starts. To start at 1 in the following list, i=0. For None, i=3
-initial tape: One character per square E.g. 123`4`5 represents [1,2,3,None,4,None,5]
 rules: each rule takes the form: state symbol -> newstate newsymbol (L|R)
