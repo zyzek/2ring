@@ -1,29 +1,11 @@
 import time
 
-
-# TODO: Integrate into the Tape class
-class TapeIterator(object):
-    def __init__(self, tape):
-        self.tape = tape
-        self.index = self.tape.negmin
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.index > self.tape.posmax:
-            raise StopIteration
-
-        value = self.tape[self.index]
-        self.index += 1
-        return value
-
 """
     This represents a tape, infinite in both directions.
     Blank squares are represented by the None type.
     Supports normal list indexing.
 """
-class Tape(list):
+class Tape(object):
     """
     Input to the tape constructor is a string: one symbol per character.
     Spaces represent blank squares.
@@ -33,6 +15,18 @@ class Tape(list):
         self.neg = []
         self.negmin = self.last_filled_index(False)
         self.posmax = self.last_filled_index()
+
+    def __iter__(self):
+        self.index = self.negmin
+        return self
+
+    def __next__(self):
+        if self.index > self.posmax:
+            raise StopIteration
+
+        value = self[self.index]
+        self.index += 1
+        return value
 
     def expand_lists(self, i):
         if i >= 0:
@@ -149,12 +143,12 @@ class LMachine(object):
                 self.advance()
                 time.sleep(delay)
             except Exception as e:
-                print(e)
+                #print(e)
                 break 
 
     def print_state(self):
         print(end=' ')
-        for v in TapeIterator(self.tape):
+        for v in self.tape:
             if v is not None:
                 print(v, end='')
             else:
