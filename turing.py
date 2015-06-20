@@ -143,7 +143,7 @@ class LMachine(object):
                 self.advance()
                 time.sleep(DELAY)
             except Exception as e:
-                #print(e)
+                print(e)
                 break 
 
     def print_state(self):
@@ -190,91 +190,10 @@ def parse_machine(filename):
 m = parse_machine("machines/unaryadder.tm")
 m.run()
 
+b_add = parse_machine("machines/binaryadder.tm")
+b_add.run()
+
 """
-u_rules = {}
-u_rules[('q0', 0)] = Rule('q0', 0, RIGHT)
-u_rules[('q0', 1)] = Rule('q1', 0, RIGHT)
-u_rules[('q1', 0)] = Rule('q1', 0, RIGHT)
-u_rules[('q1', None)] = Rule('q2', None, LEFT)
-u_rules[('q2', 0)] = Rule('done', None, LEFT)
-
-u_tape = Tape([0,0,0,0,1,0,0,0])
-u_add = LMachine(u_rules, u_tape)
-#u_add.run()
-
-b_rules = {}
-b_rules[('LSB1', 0)] = Rule('LSB1', 0, RIGHT)
-b_rules[('LSB1', 1)] = Rule('LSB1', 1, RIGHT)
-b_rules[('LSB1', 2)] = Rule('LSB1', 2, RIGHT)
-b_rules[('LSB1', '|')] = Rule('LSB1', '|', RIGHT)
-b_rules[('LSB1', ',')] = Rule('D1', ',', LEFT)
-
-b_rules[('D1', 0)] = Rule('LSB2-0', ',', RIGHT)
-b_rules[('D1', 1)] = Rule('LSB2-1', ',', RIGHT)
-b_rules[('D1', '|')] = Rule('LSB2-F', '|', RIGHT)
-
-b_rules[('LSB2-0', 0)] = Rule('LSB2-0', 0, RIGHT)
-b_rules[('LSB2-0', 1)] = Rule('LSB2-0', 1, RIGHT)
-b_rules[('LSB2-0', ',')] = Rule('LSB2-0', ',', RIGHT)
-b_rules[('LSB2-0', ';')] = Rule('D2-0', ';', LEFT)
-b_rules[('LSB2-1', 0)] = Rule('LSB2-1', 0, RIGHT)
-b_rules[('LSB2-1', 1)] = Rule('LSB2-1', 1, RIGHT)
-b_rules[('LSB2-1', ',')] = Rule('LSB2-1', ',', RIGHT)
-b_rules[('LSB2-1', ';')] = Rule('D2-1', ';', LEFT)
-b_rules[('LSB2-F', 0)] = Rule('LSB2-0', 0, RIGHT)
-b_rules[('LSB2-F', 1)] = Rule('LSB2-0', 1, RIGHT)
-b_rules[('LSB2-F', ',')] = Rule('LSB2-F', ',', RIGHT)
-b_rules[('LSB2-F', ';')] = Rule('D2-F', ';', LEFT)
-
-b_rules[('D2-0', 0)] = Rule('S-0', ';', LEFT)
-b_rules[('D2-0', 1)] = Rule('S-1', ';', LEFT)
-b_rules[('D2-0', ',')] = Rule('S-0', ',', LEFT)
-b_rules[('D2-1', 0)] = Rule('S-1', ';', LEFT)
-b_rules[('D2-1', 1)] = Rule('S-2', ';', LEFT)
-b_rules[('D2-1', ',')] = Rule('S-1', ',', LEFT)
-b_rules[('D2-F', 0)] = Rule('S-0', ';', LEFT)
-b_rules[('D2-F', 1)] = Rule('S-1', ';', LEFT)
-b_rules[('D2-F', ',')] = Rule('LSBC', ',', LEFT)
-
-b_rules[('S-0', 0)] = Rule('S-0', 0, LEFT)
-b_rules[('S-0', 1)] = Rule('S-0', 1, LEFT)
-b_rules[('S-0', 2)] = Rule('S-0', 2, LEFT)
-b_rules[('S-0', ',')] = Rule('S-0', ',', LEFT)
-b_rules[('S-0', '|')] = Rule('S-0', '|', LEFT)
-b_rules[('S-0', None)] = Rule('LSB1', 0, RIGHT)
-b_rules[('S-1', 0)] = Rule('S-1', 0, LEFT)
-b_rules[('S-1', 1)] = Rule('S-1', 1, LEFT)
-b_rules[('S-1', 2)] = Rule('S-1', 2, LEFT)
-b_rules[('S-1', ',')] = Rule('S-1', ',', LEFT)
-b_rules[('S-1', '|')] = Rule('S-1', '|', LEFT)
-b_rules[('S-1', None)] = Rule('LSB1', 1, RIGHT)
-b_rules[('S-2', 0)] = Rule('S-2', 0, LEFT)
-b_rules[('S-2', 1)] = Rule('S-2', 1, LEFT)
-b_rules[('S-2', 2)] = Rule('S-2', 2, LEFT)
-b_rules[('S-2', ',')] = Rule('S-2', ',', LEFT)
-b_rules[('S-2', '|')] = Rule('S-2', '|', LEFT)
-b_rules[('S-2', None)] = Rule('LSB1', 2, RIGHT)
-
-b_rules[('LSBC', 0)] = Rule('LSBC', 0, LEFT)
-b_rules[('LSBC', 1)] = Rule('LSBC', 1, LEFT)
-b_rules[('LSBC', ',')] = Rule('LSBC', ',', LEFT)
-b_rules[('LSBC', '|')] = Rule('CLSB', '|', LEFT)
-
-b_rules[('CLSB', 0)] = Rule('C-0', 0, LEFT)
-b_rules[('CLSB', 1)] = Rule('C-0', 1, LEFT)
-b_rules[('CLSB', 2)] = Rule('C-1', 0, LEFT)
-b_rules[('CLSB', None)] = Rule('done', 0, LEFT)
-
-b_rules[('C-0', 0)] = Rule('C-0', 0, LEFT)
-b_rules[('C-0', 1)] = Rule('C-0', 1, LEFT)
-b_rules[('C-0', 2)] = Rule('C-1', 0, LEFT)
-b_rules[('C-0', None)] = Rule('done', None, RIGHT)
-
-b_rules[('C-1', 0)] = Rule('C-0', 1, LEFT)
-b_rules[('C-1', 1)] = Rule('C-1', 0, LEFT)
-b_rules[('C-1', 2)] = Rule('C-1', 1, LEFT)
-b_rules[('C-1', None)] = Rule('done', 1, LEFT)
-
 b_tape = Tape(pos=[1,1,0,1,',',1,1,0,0,1,';'],neg=['|'])
 b_tape2 = Tape(pos=[',',';'],neg=['|'])
 b_tape3 = Tape(pos=[1,',',';'],neg=['|'])

@@ -1,87 +1,70 @@
 # binary adder 
-# input tape must be of the form |num1,num2;
-# result will be placed left of the | 
+# input tape must be of the form |num1num2;
+# result will be placed L of the | 
 L
 LSB1
 1
 |1000011100110,1011101011001111;
-rules: each rule takes the form: state symbol -> newstate newsymbol (L|R)
-
-('LSB1', 0)] = Rule('LSB1', 0, RIGHT)
-('LSB1', 1)] = Rule('LSB1', 1, RIGHT)
-('LSB1', 2)] = Rule('LSB1', 2, RIGHT)
-('LSB1', '|')] = Rule('LSB1', '|', RIGHT)
-('LSB1', ',')] = Rule('D1', ',', LEFT)
-
-('D1', 0)] = Rule('LSB2-0', ',', RIGHT)
-('D1', 1)] = Rule('LSB2-1', ',', RIGHT)
-('D1', '|')] = Rule('LSB2-F', '|', RIGHT)
-
-('LSB2-0', 0)] = Rule('LSB2-0', 0, RIGHT)
-('LSB2-0', 1)] = Rule('LSB2-0', 1, RIGHT)
-('LSB2-0', ',')] = Rule('LSB2-0', ',', RIGHT)
-('LSB2-0', ';')] = Rule('D2-0', ';', LEFT)
-('LSB2-1', 0)] = Rule('LSB2-1', 0, RIGHT)
-('LSB2-1', 1)] = Rule('LSB2-1', 1, RIGHT)
-('LSB2-1', ',')] = Rule('LSB2-1', ',', RIGHT)
-('LSB2-1', ';')] = Rule('D2-1', ';', LEFT)
-('LSB2-F', 0)] = Rule('LSB2-0', 0, RIGHT)
-('LSB2-F', 1)] = Rule('LSB2-0', 1, RIGHT)
-('LSB2-F', ',')] = Rule('LSB2-F', ',', RIGHT)
-('LSB2-F', ';')] = Rule('D2-F', ';', LEFT)
-
-('D2-0', 0)] = Rule('S-0', ';', LEFT)
-('D2-0', 1)] = Rule('S-1', ';', LEFT)
-('D2-0', ',')] = Rule('S-0', ',', LEFT)
-('D2-1', 0)] = Rule('S-1', ';', LEFT)
-('D2-1', 1)] = Rule('S-2', ';', LEFT)
-('D2-1', ',')] = Rule('S-1', ',', LEFT)
-('D2-F', 0)] = Rule('S-0', ';', LEFT)
-('D2-F', 1)] = Rule('S-1', ';', LEFT)
-('D2-F', ',')] = Rule('LSBC', ',', LEFT)
-
-('S-0', 0)] = Rule('S-0', 0, LEFT)
-('S-0', 1)] = Rule('S-0', 1, LEFT)
-('S-0', 2)] = Rule('S-0', 2, LEFT)
-('S-0', ',')] = Rule('S-0', ',', LEFT)
-('S-0', '|')] = Rule('S-0', '|', LEFT)
-('S-0', None)] = Rule('LSB1', 0, RIGHT)
-('S-1', 0)] = Rule('S-1', 0, LEFT)
-('S-1', 1)] = Rule('S-1', 1, LEFT)
-('S-1', 2)] = Rule('S-1', 2, LEFT)
-('S-1', ',')] = Rule('S-1', ',', LEFT)
-('S-1', '|')] = Rule('S-1', '|', LEFT)
-('S-1', None)] = Rule('LSB1', 1, RIGHT)
-('S-2', 0)] = Rule('S-2', 0, LEFT)
-('S-2', 1)] = Rule('S-2', 1, LEFT)
-('S-2', 2)] = Rule('S-2', 2, LEFT)
-('S-2', ',')] = Rule('S-2', ',', LEFT)
-('S-2', '|')] = Rule('S-2', '|', LEFT)
-('S-2', None)] = Rule('LSB1', 2, RIGHT)
-
-b_rules[('LSBC', 0)] = Rule('LSBC', 0, LEFT)
-b_rules[('LSBC', 1)] = Rule('LSBC', 1, LEFT)
-b_rules[('LSBC', ',')] = Rule('LSBC', ',', LEFT)
-b_rules[('LSBC', '|')] = Rule('CLSB', '|', LEFT)
-
-b_rules[('CLSB', 0)] = Rule('C-0', 0, LEFT)
-b_rules[('CLSB', 1)] = Rule('C-0', 1, LEFT)
-b_rules[('CLSB', 2)] = Rule('C-1', 0, LEFT)
-b_rules[('CLSB', None)] = Rule('done', 0, LEFT)
-
-b_rules[('C-0', 0)] = Rule('C-0', 0, LEFT)
-b_rules[('C-0', 1)] = Rule('C-0', 1, LEFT)
-b_rules[('C-0', 2)] = Rule('C-1', 0, LEFT)
-b_rules[('C-0', None)] = Rule('done', None, RIGHT)
-
-b_rules[('C-1', 0)] = Rule('C-0', 1, LEFT)
-b_rules[('C-1', 1)] = Rule('C-1', 0, LEFT)
-b_rules[('C-1', 2)] = Rule('C-1', 1, LEFT)
-b_rules[('C-1', None)] = Rule('done', 1, LEFT)
-
-b_tape = Tape(pos=[1,1,0,1,',',1,1,0,0,1,';'],neg=['|'])
-b_tape2 = Tape(pos=[',',';'],neg=['|'])
-b_tape3 = Tape(pos=[1,',',';'],neg=['|'])
-b_tape4 = Tape(pos=[',',1,';'],neg=['|'])
-b_tape5 = Tape(pos=[0,',',';'],neg=['|'])
-b_tape6 = Tape(pos=[',',0,';'],neg=['|'])
+LSB1 0 -> LSB1 0 R
+LSB1 1 -> LSB1 1 R
+LSB1 2 -> LSB1 2 R
+LSB1 | -> LSB1 | R
+LSB1 , -> D1 , L
+D1 0 -> LSB2-0 , R
+D1 1 -> LSB2-1 , R
+D1 | -> LSB2-F | R
+LSB2-0 0 -> LSB2-0 0 R
+LSB2-0 1 -> LSB2-0 1 R
+LSB2-0 , -> LSB2-0 , R
+LSB2-0 ; -> D2-0 ; L
+LSB2-1 0 -> LSB2-1 0 R
+LSB2-1 1 -> LSB2-1 1 R
+LSB2-1 , -> LSB2-1 , R
+LSB2-1 ; -> D2-1 ; L
+LSB2-F 0 -> LSB2-0 0 R
+LSB2-F 1 -> LSB2-0 1 R
+LSB2-F , -> LSB2-F , R
+LSB2-F ; -> D2-F ; L
+D2-0 0 -> S-0 ; L
+D2-0 1 -> S-1 ; L
+D2-0 , -> S-0 , L
+D2-1 0 -> S-1 ; L
+D2-1 1 -> S-2 ; L
+D2-1 , -> S-1 , L
+D2-F 0 -> S-0 ; L
+D2-F 1 -> S-1 ; L
+D2-F , -> LSBC , L
+S-0 0 -> S-0 0 L
+S-0 1 -> S-0 1 L
+S-0 2 -> S-0 2 L
+S-0 , -> S-0 , L
+S-0 | -> S-0 | L
+S-0 ` -> LSB1 0 R
+S-1 0 -> S-1 0 L
+S-1 1 -> S-1 1 L
+S-1 2 -> S-1 2 L
+S-1 , -> S-1 , L
+S-1 | -> S-1 | L
+S-1 ` -> LSB1 1 R
+S-2 0 -> S-2 0 L
+S-2 1 -> S-2 1 L
+S-2 2 -> S-2 2 L
+S-2 , -> S-2 , L
+S-2 | -> S-2 | L
+S-2 ` -> LSB1 2 R
+LSBC 0 -> LSBC 0 L
+LSBC 1 -> LSBC 1 L
+LSBC , -> LSBC , L
+LSBC | -> CLSB | L
+CLSB 0 -> C-0 0 L
+CLSB 1 -> C-0 1 L
+CLSB 2 -> C-1 0 L
+CLSB ` -> done 0 L
+C-0 0 -> C-0 0 L
+C-0 1 -> C-0 1 L
+C-0 2 -> C-1 0 L
+C-0 ` -> done ` R
+C-1 0 -> C-0 1 L
+C-1 1 -> C-1 0 L
+C-1 2 -> C-1 1 L
+C-1 ` -> done 1 L
