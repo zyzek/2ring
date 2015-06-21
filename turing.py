@@ -1,8 +1,8 @@
 import machines as m
 import tapes as t
 
-u = m.parse_machine("machines/unaryadder.tm")
-u.run(t.Tape("0000100000"), print=False)
+"""u = m.parse_machine("machines/unaryadder.tm")
+u.run(t.Tape("0000100000"), display=False)
 u.print_state()
 
 b_tape1 = t.Tape('|1000011100110,1011101011001111;')
@@ -23,10 +23,13 @@ b_tape7 = t.Tape("|,0;")
 # b_add.run(b_tape5)
 # b_add.run(b_tape6)
 # b_add.run(b_tape7)
+"""
 
-test = t.Plane(['001 111 2', 
-                '  11221110',
-                ' 111 00',
-                '0011001111'])
+sub = t.Plane(['  3244', 
+               '271199'])
 
-print(test)
+p_swp = m.parse_machine("machines/subtract-composite/swap.tm")
+p_swp.run(sub, pos=(6,0), display=True)
+#p_ineq = m.parse_machine("machines/subtract-composite/ineq.tm")
+
+#p_ineq.run(sub, pos=(4,0), display=True)

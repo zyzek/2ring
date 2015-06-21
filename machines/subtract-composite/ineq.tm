@@ -8,8 +8,7 @@ gotl
 
 # Find leftmost digit of top number and move down one place.
 gotl 0123456789 -> gotl ~ L
-gotl ` -> tlmost ~ R
-tlmost 0123456789 -> utlmost ~ D
+gotl ` -> utlmost ~ RD
 
 # If leftmost digit has nothing underneath it, it is the longest: we're done
 utlmost ` -> tlong ~ U
@@ -26,8 +25,11 @@ blong ` -> done b H
 # This is done by spawning a new TM to compare them, waiting on the spot for an answer.
 lutlmost ` -> comp ~ R
 comp 0123456789 -> cdig ~ D
-cdig ` -> cdig ! N
-cdig ! -> cdig ^ N SPAWN:digineq
+cdig ` -> cdig ^ N machines/subtract-composite/digineq.tm
 cdig ^ -> cdig ^ N
-cdig f ->
-cdig n -> 
+cdig f -> tu ` U
+tu 0123456789 -> tlong ~ U 
+cdig n -> bu ` U
+bu 0123456789 -> blong ~ U
+cdig e -> comp ` UR
+comp ` -> tlong ~ U

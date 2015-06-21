@@ -8,23 +8,23 @@ P
 D
 
 # Determine in what direction to move
-D ^ -> u-n ~ U
-D v -> d-n ~ D
-D < -> l-n ~ L
-D > -> r-n ~ R
+D ^ -> u-i ~ U
+D v -> d-i ~ D
+D < -> l-i ~ L
+D > -> r-i ~ R
 
 
 # Up
-u-n 0 -> u-0 ~ U
-u-n 1 -> u-1 ~ U
-u-n 2 -> u-2 ~ U
-u-n 3 -> u-3 ~ U
-u-n 4 -> u-4 ~ U
-u-n 5 -> u-5 ~ U
-u-n 6 -> u-6 ~ U
-u-n 7 -> u-7 ~ U
-u-n 8 -> u-8 ~ U
-u-n 9 -> u-9 ~ U
+u-i 0 -> u-0 ~ U
+u-i 1 -> u-1 ~ U
+u-i 2 -> u-2 ~ U
+u-i 3 -> u-3 ~ U
+u-i 4 -> u-4 ~ U
+u-i 5 -> u-5 ~ U
+u-i 6 -> u-6 ~ U
+u-i 7 -> u-7 ~ U
+u-i 8 -> u-8 ~ U
+u-i 9 -> u-9 ~ U
 
 u-0 0 -> u-e ~ D
 u-0 123456789 -> u-f ~ D
@@ -63,16 +63,16 @@ u-n 0123456789 -> u-n ~ D
 u-n ^ -> done n H
 
 # Down
-d-n 0 -> d-0 ~ D
-d-n 1 -> d-1 ~ D
-d-n 2 -> d-2 ~ D
-d-n 3 -> d-3 ~ D
-d-n 4 -> d-4 ~ D
-d-n 5 -> d-5 ~ D
-d-n 6 -> d-6 ~ D
-d-n 7 -> d-7 ~ D
-d-n 8 -> d-8 ~ D
-d-n 9 -> d-9 ~ D
+d-i 0 -> d-0 ~ D
+d-i 1 -> d-1 ~ D
+d-i 2 -> d-2 ~ D
+d-i 3 -> d-3 ~ D
+d-i 4 -> d-4 ~ D
+d-i 5 -> d-5 ~ D
+d-i 6 -> d-6 ~ D
+d-i 7 -> d-7 ~ D
+d-i 8 -> d-8 ~ D
+d-i 9 -> d-9 ~ D
 
 d-0 0 -> d-e ~ U
 d-0 123456789 -> d-f ~ U
@@ -112,16 +112,16 @@ d-n ^ -> done n H
 
 
 # Left
-l-n 0 -> l-0 ~ L
-l-n 1 -> l-1 ~ L
-l-n 2 -> l-2 ~ L
-l-n 3 -> l-3 ~ L
-l-n 4 -> l-4 ~ L
-l-n 5 -> l-5 ~ L
-l-n 6 -> l-6 ~ L
-l-n 7 -> l-7 ~ L
-l-n 8 -> l-8 ~ L
-l-n 9 -> l-9 ~ L
+l-i 0 -> l-0 ~ L
+l-i 1 -> l-1 ~ L
+l-i 2 -> l-2 ~ L
+l-i 3 -> l-3 ~ L
+l-i 4 -> l-4 ~ L
+l-i 5 -> l-5 ~ L
+l-i 6 -> l-6 ~ L
+l-i 7 -> l-7 ~ L
+l-i 8 -> l-8 ~ L
+l-i 9 -> l-9 ~ L
 
 l-0 0 -> l-e ~ R
 l-0 123456789 -> l-f ~ R
@@ -160,16 +160,16 @@ l-n 0123456789 -> l-n ~ R
 l-n ^ -> done n H
 
 # Right
-r-n 0 -> r-0 ~ R
-r-n 1 -> r-1 ~ R
-r-n 2 -> r-2 ~ R
-r-n 3 -> r-3 ~ R
-r-n 4 -> r-4 ~ R
-r-n 5 -> r-5 ~ R
-r-n 6 -> r-6 ~ R
-r-n 7 -> r-7 ~ R
-r-n 8 -> r-8 ~ R
-r-n 9 -> r-9 ~ R
+r-i 0 -> r-0 ~ R
+r-i 1 -> r-1 ~ R
+r-i 2 -> r-2 ~ R
+r-i 3 -> r-3 ~ R
+r-i 4 -> r-4 ~ R
+r-i 5 -> r-5 ~ R
+r-i 6 -> r-6 ~ R
+r-i 7 -> r-7 ~ R
+r-i 8 -> r-8 ~ R
+r-i 9 -> r-9 ~ R
 
 r-0 0 -> r-e ~ L
 r-0 123456789 -> r-f ~ L

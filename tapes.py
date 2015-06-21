@@ -95,7 +95,7 @@ class Plane(object):
     zero = (i,j) shifts the origin so that 
     p[i][j] -> plane[(0,0)]
     """
-    def __init__(self, p, zero=(0,0)):
+    def __init__(self, p=[], zero=(0,0)):
         self.plane = {}
         for y, l in enumerate(p):
             for x, v in enumerate(l):

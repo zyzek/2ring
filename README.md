@@ -4,9 +4,11 @@ tapes.py contains tapes of varying formats.
 machines/ holds descriptions of particular machines.
 
 # TODO
-* Add capability for machines to spawn other machines.
 * Finish composite-subtract
 * Add scanned symbol wildcard to rule format
+* Allow multiple moves in sequence
+* Clean up existing code and machines
+* Think of what to add next
 
 # TM Description Format
 Machines are described in text files, conventionally ending in .tm
@@ -14,28 +16,29 @@ The format is as follows, where a blank symbol is represented by a backtick.
 
     type
     start_state
-    state s -> newstate n D
+    state s -> newstate n D [childpath] [xoff,yoff]
 
-The next line specifies the machine's type - possible types are L or P for Linear or Planar machines.
-Then the name of the start state.
-The remaining lines until EOF each contain a single transition rule where if the machine is in *state*, scanning the symbol *s* on the tape, it will transition to **newstate**, write **n** down in place of **s**, and move along the tape in a direction determined by **D**, which may either be **L**, **R** for linear machines, or **L**, **R**, **U**, **D** for planar ones. **H** will cause the machine to halt.
+The first line specifies the machine's type - possible types are L or P for Linear or Planar machines.
+The next line contains the name of the start state.
+The remaining lines until EOF each contain a single transition rule where if the machine is in *state*, scanning the symbol *s* on the tape, it will transition to **newstate**, write **n** down in place of **s**, and move along the tape in a direction determined by **D**, which may be either **L**, **R** for linear machines, or **L**, **R**, **U**, **D** for planar ones. **H** will cause the machine to halt.
+**childpath** is a path to the machine to be spawned as a child of this one. The child machine will be created in the same location as the parent, offset by **xoff,yoff**, if that argument is given.
 
-If **s** is longer than a single character, a rule will be created for each character in the string. Hence,
-```A 012 -> B 4 R```
-is equivalent to 
-```A 0 -> B 4 R
-   A 1 -> B 4 R
-   A 2 -> B 4 R```
+If **s** is longer than a single character, a rule will be created for each character in the string. Hence, ```A 012 -> B 4 R``` is equivalent to:
+```
+A 0 -> B 4 R
+A 1 -> B 4 R
+A 2 -> B 4 R
+```
 
 Any other choice for **D** will cause the machine not to move its head on that rule. However, if **D** is a string containing orthogonal directions, both moves will be performed. For example a value of **UR** will cause the machine to move diagonally one square to the upper-right. 
 
-If **n** is **~**, the machine will not change the symbol in that position. This also works with multicharacter scanned symbols, so that
-```A 01 -> B ~ R``` 
-yields the same result as
-```A 0 -> B 0 R
-   A 1 -> B 1 R```
+If **n** is **~**, the machine will not change the symbol in that position. This also works with multicharacter scanned symbols, so that ```A 01 -> B ~ R``` yields the same result as:
+```
+A 0 -> B 0 R
+A 1 -> B 1 R
+```
 
-Lines beginning with a # are interpreted as comments, and whitespace doesn't matter.
+Lines beginning with a # are interpreted as comments. Whitespace doesn't matter.
 
 # Running a machine
 Once a machine has been described, it can be instantiated with `machines.parse_machine(filepath)`, which returns a machine of that type.
