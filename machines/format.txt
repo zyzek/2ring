@@ -1,5 +1,0 @@
-# turing machine syntax -- blank is represented by `
-# comments may go at the start of the file, preceded by a # 
-type: L(inear) or P(lanar)
-start state
-rules: each rule takes the form: state symbol -> newstate newsymbol (L|R)
