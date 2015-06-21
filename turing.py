@@ -2,13 +2,13 @@ import machines as m
 import tapes as t
 
 u = m.parse_machine("machines/unaryadder.tm")
-#u.run(t.Tape("0000100000"), print=False)
-#u.print_state()
+u.run(t.Tape("0000100000"), print=False)
+u.print_state()
 
 b_tape1 = t.Tape('|1000011100110,1011101011001111;')
 b_tape2 = t.Tape('|1101,11001;')
-b_add = m.parse_machine("machines/binaryadder.tm")
-#b_add.run(b_tape1)
+b_add = m.parse_machine("machines/compactedbinaryadder.tm")
+b_add.run(b_tape1)
 #b_add.print_state()
 #b_add.run(b_tape2)
 

@@ -33,8 +33,11 @@ class LMachine(object):
         self.state = op.newstate
         if op.direction == 'L':
             self.left()
-        else:
-            self.right()
+        elif op.direction == 'R':
+        	self.right()
+
+        if 'H' in op.direction:
+        	raise StopIteration("Halting machine.")
 
     def run(self, tape, position=0, delay=0, print=True):
         self.state = self.start
@@ -48,9 +51,10 @@ class LMachine(object):
                     self.print_state()
                 self.advance()
                 time.sleep(delay)
-            except Exception as e:
-                #print(e)
-                break 
+            except StopIteration:
+                break
+            except KeyError:
+            	break
 
     def print_state(self):
         print(end=' ')
@@ -87,14 +91,18 @@ class PMachine(object):
         op = self.rules[(self.state, self.plane[self.pos])]
         self.tape[self.pos] = op.newsym
         self.state = op.newstate
-        if op.direction == 'L':
+        if 'L' in op.direction:
             self.left()
-        elif op.direction == 'R':
+        elif 'R' in op.direction:
             self.right()
-        elif op.direction == 'U':
+        
+        if 'U' in op.direction:
             self.up()
-        else:
+        elif 'D' in op.direction:
             self.down()
+
+        if 'H' in op.direction:
+        	raise StopIteration("Halting machine.")
 
     def run(self, plane, position=(0,0), delay=0):
         self.state = self.start
@@ -107,9 +115,10 @@ class PMachine(object):
                 self.print_state()
                 self.advance()
                 time.sleep(delay)
-            except Exception as e:
-                #print(e)
-                break 
+            except StopIteration:
+                break
+            except KeyError:
+            	break
 
     def print_state(self):
         print(end=' ')
@@ -125,16 +134,25 @@ class PMachine(object):
 def parse_machine(filename):
     with open(filename, 'r') as f:
         t = f.readline()
-        while t[0] == '#':
-            t = f.readline().strip()
+        while t[0] == '#' or t == '\n':
+            t = f.readline()
+        t = t.strip()
 
-        startstate = f.readline().strip()
+        startstate = f.readline()
+        while startstate[0] == '#' or startstate == '\n':
+            startstate = f.readline()
+        startstate = startstate.strip()
+        
         rules = {}
         rule = f.readline()
 
         while rule != '':
-            rule = rule.strip().split()
-            rules[(rule[0], None if rule[1] == '`' else rule[1])] = Rule(rule[3], None if rule[4] == '`' else rule[4], rule[5])
+            if rule != '\n' and rule[0] != '#':
+	            rule = rule.strip().split()
+
+	            for s in rule[1]:
+	            	rules[(rule[0], None if s == '`' else s)] = Rule(rule[3], s if rule[4] == '~' else None if rule[4] == '`' else rule[4], rule[5])
+            
             rule = f.readline()
 
         if t == 'L':

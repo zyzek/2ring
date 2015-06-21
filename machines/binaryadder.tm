@@ -74,7 +74,5 @@ RM ; -> RM . R
 RM ` -> LR ` L
 LR ` -> LR ` L
 LR . -> LR ` L
-LR . -> LR ` L
-LR . -> LR ` L
-LR 0 -> done 0 R
-LR 1 -> done 1 R
+LR 0 -> done 0 RH
+LR 1 -> done 1 RH
