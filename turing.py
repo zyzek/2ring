@@ -25,10 +25,10 @@ b_tape7 = t.Tape("|,0;")
 # b_add.run(b_tape7)
 """
 
-sub = t.Plane(['  3244', 
-               '271199'])
+sub = t.Plane(['  3241', 
+               '203196'])
 
-p_swp = m.parse_machine("machines/subtract-composite/swap.tm")
+p_swp = m.parse_machine("machines/subtract-composite/subtract.tm")
 p_swp.run(sub, pos=(6,0), display=True)
 #p_ineq = m.parse_machine("machines/subtract-composite/ineq.tm")
 

@@ -114,15 +114,19 @@ class PMachine(object):
         op = self.rules[(self.state, self.plane[self.pos])]
         self.plane[self.pos] = op.newsym
         self.state = op.newstate
-        if 'L' in op.direction:
-            self.left()
-        elif 'R' in op.direction:
-            self.right()
         
-        if 'U' in op.direction:
-            self.up()
-        elif 'D' in op.direction:
-            self.down()
+        for d in op.direction:
+            if d == 'L':
+                self.left()
+            elif d == 'R':
+                self.right()        
+            elif d == 'U':
+                self.up()
+            elif d == 'D':
+                self.down()
+            elif d == 'H':
+                self.halted = True
+                break
 
         for c in self.children:
             c.advance()
@@ -135,10 +139,6 @@ class PMachine(object):
             offspring.plane = self.plane
             offspring.pos = (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
             self.children.append(offspring)
-
-        if 'H' in op.direction:
-            self.halted = True
-
 
     def cont(self, display=False, delay=0):
         while self.i < MAXITER and not self.halted:

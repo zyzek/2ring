@@ -6,7 +6,7 @@
 P
 init
 
-init ` -> acquire ~ DL machines/subtract-composite/swapwrk.tm 0,-1
+init ` -> acquire s DL machines/subtract-composite/swapwrk.tm 0,-1
 
 acquire 0 -> 0 ~ U
 acquire 1 -> 1 ~ U
@@ -20,8 +20,6 @@ acquire 8 -> 8 ~ U
 acquire 9 -> 9 ~ U
 acquire ` -> min ~ D
 
-min ` -> done - H
-
 0 0123456789` -> acquire 0 DL machines/subtract-composite/swapwrk.tm 0,-1
 1 0123456789` -> acquire 1 DL machines/subtract-composite/swapwrk.tm 0,-1
 2 0123456789` -> acquire 2 DL machines/subtract-composite/swapwrk.tm 0,-1
@@ -32,3 +30,8 @@ min ` -> done - H
 7 0123456789` -> acquire 7 DL machines/subtract-composite/swapwrk.tm 0,-1
 8 0123456789` -> acquire 8 DL machines/subtract-composite/swapwrk.tm 0,-1
 9 0123456789` -> acquire 9 DL machines/subtract-composite/swapwrk.tm 0,-1
+
+min ` -> finsig - UUR
+
+finsig 0123456789 -> finsig ~ R
+finsig s -> done t H
