@@ -29,7 +29,7 @@ sub = t.Plane(['  3241',
                '203196'])
 
 p_swp = m.parse_machine("machines/subtract-composite/subtract.tm")
-p_swp.run(sub, pos=(6,0), display=True)
+p_swp.run(sub, pos=(6,0), display=True, delay=0)
 #p_ineq = m.parse_machine("machines/subtract-composite/ineq.tm")
 
 #p_ineq.run(sub, pos=(4,0), display=True)

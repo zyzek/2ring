@@ -22,7 +22,7 @@ The format is as follows, where a blank symbol is represented by a backtick.
 The first line specifies the machine's type - possible types are L or P for Linear or Planar machines.
 The next line contains the name of the start state.
 The remaining lines until EOF each contain a single transition rule where if the machine is in *state*, scanning the symbol *s* on the tape, it will transition to **newstate**, write **n** down in place of **s**, and move along the tape in a direction determined by **D**, which is a string of either **L**, **R** for linear machines, or **L**, **R**, **U**, **D** for planar ones. **H** will cause the machine to halt.
-**childpath** is a path to the machine to be spawned as a child of this one. The child machine will be created in the same location as the parent, offset by **xoff,yoff**, if that argument is given.
+**childpath** is a path to the machine to be spawned as a child of this one. The child machine will be created in the same location as the parent, before it moves, offset by **xoff,yoff**, if that argument is given.
 
 If **s** is longer than a single character, a rule will be created for each character in the string. Hence, ```A 012 -> B 4 R``` is equivalent to:
 ```

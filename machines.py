@@ -114,6 +114,18 @@ class PMachine(object):
         op = self.rules[(self.state, self.plane[self.pos])]
         self.plane[self.pos] = op.newsym
         self.state = op.newstate
+
+        for c in self.children:
+            c.advance()
+            if c.halted:
+                self.children.extend(c.children)
+        self.children = [c for c in self.children if not c.halted]
+
+        if op.spawn:
+            offspring = parse_machine(op.spawn)
+            offspring.plane = self.plane
+            offspring.pos = (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
+            self.children.append(offspring)
         
         for d in op.direction:
             if d == 'L':
@@ -127,18 +139,6 @@ class PMachine(object):
             elif d == 'H':
                 self.halted = True
                 break
-
-        for c in self.children:
-            c.advance()
-            if c.halted:
-                self.children.extend(c.children)
-        self.children = [c for c in self.children if not c.halted]
-
-        if op.spawn:
-            offspring = parse_machine(op.spawn)
-            offspring.plane = self.plane
-            offspring.pos = (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
-            self.children.append(offspring)
 
     def cont(self, display=False, delay=0):
         while self.i < MAXITER and not self.halted:
