@@ -4,7 +4,6 @@ tapes.py contains tapes of varying formats.
 machines/ holds descriptions of particular machines.
 
 # TODO
-* Finish composite-subtract
 * Add scanned symbol wildcard to rule format
 * Make LMachine inherit from PMachine
 * Clean up existing code and machines
