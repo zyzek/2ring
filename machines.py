@@ -1,7 +1,7 @@
 import time
 import tapes
 
-MAXITER = 1000
+MAXLIFE = 1000
 
 class Rule(object):
     def __init__(self, newstate='q0', newsym='e', direction='L', spawn=False, sp_off=(0,0)):
@@ -14,82 +14,24 @@ class Rule(object):
     def __repr__(self):
         return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
 
-
-class LMachine(object):
-    def __init__(self, rules, start='q0'):
+class Machine(object):
+    def __init__(self, rules, start='q0', linear=False, lifespan=MAXLIFE):
         self.rules = rules
         self.start = start
         self.state = start
-        self.tape = tapes.Tape()
-        self.pos = 0
-        self.i = 0
-        self.children = []
-        self.halted = False
+        self.linear = linear
+        self.lifespan = lifespan
 
-    def left(self):
-        self.pos -= 1
-    
-    def right(self):
-        self.pos += 1
+        if linear:
+            self.tape = tapes.Tape()
+            self.pos = 0
+            self.left = self.linleft
+            self.right = self.linright
+            self.print_state = self.linprint
+        else:
+            self.tape = tapes.Plane()
+            self.pos = (0,0)
 
-    def advance(self):
-        if self.halted:
-            return
-
-        op = self.rules[(self.state, self.tape[self.pos])]
-        self.tape[self.pos] = op.newsym
-        self.state = op.newstate
-        if op.direction == 'L':
-            self.left()
-        elif op.direction == 'R':
-            self.right()
-
-        if op.spawn:
-            self.children.append(parse_machine(op.spawn))
-
-        if 'H' in op.direction:
-            self.halted = True
-            raise StopIteration("Halting machine.")
-
-    def cont(self, display=False, delay=0):
-        while self.i < MAXITER and not self.halted:
-            self.i += 1
-            try:
-                if display:
-                    self.print_state()
-                self.advance()
-                time.sleep(delay)
-            except StopIteration:
-                break
-            except KeyError:
-                break
-
-    def run(self, tape, pos=0, display=True, delay=0):
-        self.state = self.start
-        self.tape = tape
-        self.pos = pos
-        self.i = 0
-        self.halted = False
-        self.cont(display, delay)
-
-    def print_state(self):
-        print(end=' ')
-        for v in self.tape:
-            if v is not None:
-                print(v, end='')
-            else:
-                print(' ', end='')
-        print(' ' + self.state)
-        print((self.pos + abs(self.tape.negmin) + 1)*' ' + '^')
-
-
-class PMachine(object):
-    def __init__(self, rules, start='q0'):
-        self.rules = rules
-        self.start = start
-        self.state = start
-        self.plane = tapes.Plane()
-        self.pos = (0,0)
         self.i = 0
         self.delay = 0
         self.children = []
@@ -106,13 +48,27 @@ class PMachine(object):
 
     def down(self):
         self.pos = (self.pos[0], self.pos[1] + 1)
+
+    def linleft(self):
+        self.pos -= 1
+
+    def linright(self):
+        self.pos += 1
     
+    def get_offset_pos(self, op):
+        if self.linear:
+            return self.pos+op.sp_off[0]
+        else:
+            return (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
+
     def advance(self):
         if self.halted:
             return
 
-        op = self.rules[(self.state, self.plane[self.pos])]
-        self.plane[self.pos] = op.newsym
+        self.i += 1
+
+        op = self.rules[(self.state, self.tape[self.pos])]
+        self.tape[self.pos] = op.newsym
         self.state = op.newstate
 
         for c in self.children:
@@ -122,9 +78,9 @@ class PMachine(object):
         self.children = [c for c in self.children if not c.halted]
 
         if op.spawn:
-            offspring = parse_machine(op.spawn)
-            offspring.plane = self.plane
-            offspring.pos = (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
+            offspring = parse_machine(op.spawn, self.lifespan - self.i)
+            offspring.tape = self.tape
+            offspring.pos = self.get_offset_pos(op)
             self.children.append(offspring)
         
         for d in op.direction:
@@ -140,9 +96,11 @@ class PMachine(object):
                 self.halted = True
                 break
 
+        if self.i >= self.lifespan:
+            self.halted = True
+
     def cont(self, display=False, delay=0):
-        while self.i < MAXITER and not self.halted:
-            self.i += 1
+        while not self.halted: 
             try:
                 if display:
                     self.print_state()
@@ -154,19 +112,29 @@ class PMachine(object):
         if display:
             self.print_state()
 
-    def run(self, plane, pos=(0,0), display=False, delay=0):
+    def run(self, tape, pos, display=False, delay=0):
         self.state = self.start
-        self.plane = plane
+        self.tape = tape
         self.pos = pos
         self.i = 0
         self.halted = False
         self.cont(display, delay)
 
     def print_state(self):
-        print(self.state, self.pos)
-        print(self.plane, end='\n\n')
+        #print(self.state, self.pos)
+        print(self.tape, end='\n\n')
 
-def parse_machine(filename):
+    def linprint(self):
+        print(end=' ')
+        for v in self.tape:
+            if v is not None:
+                print(v, end='')
+            else:
+                print(' ', end='')
+        print(' ' + self.state)
+        print((self.pos + abs(self.tape.negmin) + 1)*' ' + '^')
+
+def parse_machine(filename, maxiter=MAXLIFE):
     btck_to_none = lambda c: None if c == '`' else c
 
     with open(filename, 'r') as f:
@@ -187,13 +155,16 @@ def parse_machine(filename):
             if rule != '\n' and rule[0] != '#':
                 rule = rule.strip().split()
                 for s in rule[1]:
-                    rules[(rule[0], btck_to_none(s))] = Rule(rule[3], btck_to_none(s) if rule[4] == '~' else btck_to_none(rule[4]), rule[5], False if len(rule) < 7 else rule[6])
+                    rules[(rule[0], btck_to_none(s))] = Rule(rule[3], 
+                                                             btck_to_none(s) if rule[4] == '~' else btck_to_none(rule[4]), 
+                                                             rule[5], 
+                                                             False if len(rule) < 7 else rule[6])
                     if len(rule) > 7:
-                        rules[(rule[0], btck_to_none(s))].sp_off = tuple([int(x) for x in rule[7].split(',')])
+                        rules[(rule[0], btck_to_none(s))].sp_off = [int(x) for x in rule[7].split(',')]
 
             rule = f.readline()
 
         if t == 'L':
-            return LMachine(rules, startstate)
+            return Machine(rules, startstate, linear=True, lifespan=maxiter)
         elif t == 'P':
-            return PMachine(rules, startstate)
+            return Machine(rules, startstate, lifespan=maxiter)

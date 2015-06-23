@@ -1,14 +1,8 @@
 # Turing Machine Playground
-machines.py holds the machine classes themselves, associated functions.
-tapes.py contains tapes of varying formats.
-machines/ holds descriptions of particular machines.
-
-# TODO
-* Add scanned symbol wildcard to rule format
-* Make LMachine inherit from PMachine
-* Clean up existing code and machines
-* Think of what to add next
-* Visuals
+**demo.py** runs some example machines 
+**machines.py** holds the machine class itself, and associated functions.
+**tapes.py** contains tapes of a couple of formats.
+The **machines/** directory holds descriptions of particular machines.
 
 # TM Description Format
 Machines are described in text files, conventionally ending in .tm
