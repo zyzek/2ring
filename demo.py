@@ -1,3 +1,4 @@
+# encoding: utf-8
 import machines as m
 import tapes as t
 import time
@@ -33,6 +34,23 @@ field = ["###########",
          "# @@      #",
          "#  @      <",
          "###########"]
-
 con = m.parse_machine("machines/conway/conway.tm", 10000)
 con.run(t.Plane(field), (1,1), display=True, delay=0)
+
+"""print("\nA dumb tail-chaser.")
+time.sleep(1)
+course = ["┌       {       ┐",
+		  "                      ┌    ┐",
+		  "                           ",
+		  "'       >       u%    └         ┐",
+		  "                           *",
+		  "        *                  └    ┘",
+		  "└       )       ^       {       ┐",
+		  "",
+		  "                *",
+		  "                ,       v       i",
+		  "",
+		  "                                *",
+		  "                └       (       ┘"]
+chaser = m.parse_machine("machines/snailchase.tm")
+chaser.run(t.Plane(course), (0,0), display=True, delay=0.03)"""

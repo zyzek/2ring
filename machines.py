@@ -1,3 +1,4 @@
+# encoding: utf-8
 import time
 import tapes
 
@@ -137,7 +138,7 @@ class Machine(object):
 def parse_machine(filename, maxiter=MAXLIFE):
     btck_to_none = lambda c: None if c == '`' else c
 
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         t = f.readline()
         while t[0] == '#' or t == '\n':
             t = f.readline()

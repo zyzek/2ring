@@ -3,7 +3,7 @@ In fiddling with Turing Machines, there are many extensions that can be made. Mu
 
 * **demo.py** runs some example machines.
 * **machines.py** holds the machine class itself, and associated functions.
-* **tapes.py** contains a couple of tapes formats.
+* **tapes.py** contains a couple of tape formats.
 * The **machines/** directory holds descriptions of particular machines.
 
 # TM Description Format
