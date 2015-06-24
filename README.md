@@ -1,8 +1,10 @@
 # Turing Machine Playground
-**demo.py** runs some example machines 
-**machines.py** holds the machine class itself, and associated functions.
-**tapes.py** contains tapes of a couple of formats.
-The **machines/** directory holds descriptions of particular machines.
+In fiddling with Turing Machines, there are many extensions that can be made. Multiple machines on a single tape, 2-dimensional tapes, multi-head, multi-tape machines, machines spawning other machines: these are just a few possibilities.
+
+* **demo.py** runs some example machines.
+* **machines.py** holds the machine class itself, and associated functions.
+* **tapes.py** contains a couple of tapes formats.
+* The **machines/** directory holds descriptions of particular machines.
 
 # TM Description Format
 Machines are described in text files, conventionally ending in .tm

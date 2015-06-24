@@ -1,12 +1,16 @@
 # Conway's Game of Life
-# Each cell actually stores the info of the previous two generations
+# A dead cell with three live optneighbours becomes live;
+# A live cell with two or three live optneighbours lives on;
+# All other configurations die or remain dead.
+#
+# In this CA, each cell actually stores the info of the previous two generations
 # So that we can calculate the next generation without self-interference
 #         _________________________
 # Hence: |  sym  |  last  |  curr  |
-#		 |-------+--------+--------|
+#        |-------+--------+--------|
 #        |   `   |  dead  |  dead  |
-#		 |   .   |  live  |  dead  |
-#		 |	 *	 |  dead  |  live  |
+#        |   .   |  live  |  dead  |
+#        |   *   |  dead  |  live  |
 #        |   @   |  live  |  live  |
 #        o=========================o
 # A grid should look like this, with whatever seed pattern you choose
@@ -14,9 +18,9 @@
 #
 #   #######
 #   >     #
-#   #  @  #
-#   # @@  #
-#   #  @  #
+#   #     #
+#   #     #
+#   #     #
 #   #     <
 #   #######
 #
@@ -26,8 +30,8 @@
 P
 checkcellRD
 
-checkcellRD `. -> deadcellRD ~ N machines/conway/neighbours.tm
-checkcellRD @* -> livecellRD ~ N machines/conway/neighbours.tm
+checkcellRD `. -> deadcellRD ~ N machines/conway/optneighbours.tm
+checkcellRD @* -> livecellRD ~ N machines/conway/optneighbours.tm
 checkcellRD # -> checkcellLD ~ DL
 checkcellRD < -> checkcellLU ~ L
 
@@ -40,8 +44,8 @@ livecellRD 23 -> checkcellRD @ R
 livecellRD 0145678 -> checkcellRD . R
 
 
-checkcellLD `. -> deadcellLD ~ N machines/conway/neighbours.tm
-checkcellLD @* -> livecellLD ~ N machines/conway/neighbours.tm
+checkcellLD `. -> deadcellLD ~ N machines/conway/optneighbours.tm
+checkcellLD @* -> livecellLD ~ N machines/conway/optneighbours.tm
 checkcellLD # -> checkcellRD ~ DR
 
 deadcellLD `. -> deadcellLD ~ N
@@ -53,8 +57,8 @@ livecellLD 23 -> checkcellLD @ L
 livecellLD 0145678 -> checkcellLD . L
 
 
-checkcellRU `. -> deadcellRU ~ N machines/conway/neighbours.tm
-checkcellRU @* -> livecellRU ~ N machines/conway/neighbours.tm
+checkcellRU `. -> deadcellRU ~ N machines/conway/optneighbours.tm
+checkcellRU @* -> livecellRU ~ N machines/conway/optneighbours.tm
 checkcellRU # -> checkcellLU ~ UL
 
 deadcellRU `. -> deadcellRU ~ N
@@ -66,8 +70,8 @@ livecellRU 23 -> checkcellRU @ R
 livecellRU 0145678 -> checkcellRU . R
 
 
-checkcellLU `. -> deadcellLU ~ N machines/conway/neighbours.tm
-checkcellLU @* -> livecellLU ~ N machines/conway/neighbours.tm
+checkcellLU `. -> deadcellLU ~ N machines/conway/optneighbours.tm
+checkcellLU @* -> livecellLU ~ N machines/conway/optneighbours.tm
 checkcellLU # -> checkcellRU ~ UR
 checkcellLU > -> checkcellRD ~ R
 
