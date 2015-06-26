@@ -3,6 +3,7 @@ import machines as m
 import tapes as t
 import time
 
+
 print("A Unary Adder in One Dimension")
 time.sleep(1)
 u = m.parse_machine("machines/unaryadder.tm")
@@ -20,7 +21,8 @@ time.sleep(1)
 print("\nA Decimal Subtractor in Two Dimensions and with Many Working Parts")
 print("This machine is more of a complex, working in concert.\nThe parent spawns workers whenever it needs them for subtasks.")
 time.sleep(5)
-sub = t.Plane(['  3241', 
+
+sub = t.Plane(['  3241',
                '203196'])
 d_sub = m.parse_machine("machines/subtract-composite/subtract.tm")
 d_sub.run(sub, pos=(6,0), display=True, delay=0.1)
@@ -37,7 +39,7 @@ field = ["###########",
 con = m.parse_machine("machines/conway/conway.tm", 10000)
 con.run(t.Plane(field), (1,1), display=True, delay=0)
 
-"""print("\nA dumb tail-chaser.")
+print("\nA dumb tail-chaser.")
 time.sleep(1)
 course = ["┌       {       ┐",
 		  "                      ┌    ┐",
@@ -53,4 +55,4 @@ course = ["┌       {       ┐",
 		  "                                *",
 		  "                └       (       ┘"]
 chaser = m.parse_machine("machines/snailchase.tm")
-chaser.run(t.Plane(course), (0,0), display=True, delay=0.03)"""
+chaser.run(t.Plane(course), (0,0), display=True, delay=0.03)

@@ -15,28 +15,109 @@ class Rule(object):
     def __repr__(self):
         return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
 
+class MachineContext(object):
+    def __init__(self, tape):
+        self.tape = tape
+        self.running = []
+        self.halted = []
+        self.delay = 0
+
+    def create_machine(self, path, pos=None, lifespan=MAXLIFE, parent=None):
+        youngling = None
+
+        for machine in self.halted:
+            if path == machine.name:
+                youngling = machine
+                break
+
+        if youngling:
+            youngling.reset()
+            youngling.lifespan = lifespan
+            if pos:
+                youngling.pos = pos
+
+            self.running.insert(self.running.index(parent) if parent else 0, youngling)
+            self.halted.remove(youngling)
+            return
+
+        for machine in self.running:
+            if path == machine.name:
+                youngling = Machine(machine.name,
+                                    machine.rules,
+                                    machine.start,
+                                    machine.linear,
+                                    lifespan,
+                                    self.tape)
+                youngling.pos = pos
+                youngling.context = self
+
+        if not youngling:
+            youngling = parse_machine(path, lifespan)
+            youngling.tape = self.tape
+            if pos:
+                youngling.pos = pos
+            youngling.context = self
+                
+        self.running.insert(self.running.index(parent) if parent else 0, youngling)
+
+    def add_machine(self, machine):
+        self.running.insert(0,machine)
+        machine.context = self
+
+    def run(self, display=True):
+        while self.running: 
+            for i in range(len(self.running) - 1, -1, -1):
+                machine = self.running[i]
+                machine.advance()
+                if machine.halted:
+                    self.halted.append(machine)
+                    del self.running[i]
+
+            if display:
+                print(self.running)
+                print(self.tape, end='\n\n')
+                time.sleep(self.delay)
+
 class Machine(object):
-    def __init__(self, rules, start='q0', linear=False, lifespan=MAXLIFE):
+    def __init__(self, name, rules, start='q0', linear=False, lifespan=MAXLIFE, tape=None):
+        self.name = name
         self.rules = rules
         self.start = start
         self.state = start
         self.linear = linear
         self.lifespan = lifespan
+        self.context = None
 
         if linear:
-            self.tape = tapes.Tape()
+            if not tape:
+                self.tape = tapes.Tape()
+            else:
+                self.tape = tape
             self.pos = 0
             self.left = self.linleft
             self.right = self.linright
             self.print_state = self.linprint
         else:
-            self.tape = tapes.Plane()
+            if not tape:
+                self.tape = tapes.Plane()
+            else:
+                self.tape = tape
             self.pos = (0,0)
 
         self.i = 0
         self.delay = 0
-        self.children = []
         self.halted = False
+
+    def reset(self):
+        self.state = self.start
+        self.lifespan = MAXLIFE
+        self.i = 0
+        self.halted = False
+        self.delay = 0
+        if self.linear:
+            self.pos = 0
+        else:
+            self.pos = (0,0)
 
     def left(self):
         self.pos = (self.pos[0] - 1, self.pos[1])
@@ -62,6 +143,20 @@ class Machine(object):
         else:
             return (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
 
+    def move_sequence(self, moves):
+        for m in moves:
+            if m == 'L':
+                self.left()
+            elif m == 'R':
+                self.right()        
+            elif m == 'U':
+                self.up()
+            elif m == 'D':
+                self.down()
+            elif m == 'H':
+                self.halted = True
+                return
+
     def advance(self):
         if self.halted:
             return
@@ -72,30 +167,23 @@ class Machine(object):
         self.tape[self.pos] = op.newsym
         self.state = op.newstate
 
-        for c in self.children:
-            c.advance()
-            if c.halted:
-                self.children.extend(c.children)
-        self.children = [c for c in self.children if not c.halted]
-
         if op.spawn:
             offspring = parse_machine(op.spawn, self.lifespan - self.i)
             offspring.tape = self.tape
             offspring.pos = self.get_offset_pos(op)
-            self.children.append(offspring)
-        
-        for d in op.direction:
-            if d == 'L':
-                self.left()
-            elif d == 'R':
-                self.right()        
-            elif d == 'U':
-                self.up()
-            elif d == 'D':
-                self.down()
-            elif d == 'H':
-                self.halted = True
-                break
+            
+            if not self.context:
+                self.context = MachineContext(self.tape)
+                self.context.delay = self.delay
+                self.context.add_machine(self)
+                self.context.create_machine(op.spawn, self.get_offset_pos(op), self.lifespan - self.i)
+                self.move_sequence(op.direction)
+                self.context.run()
+            else:
+                self.context.create_machine(op.spawn, self.get_offset_pos(op), self.lifespan - self.i, self)
+                
+
+        self.move_sequence(op.direction)
 
         if self.i >= self.lifespan:
             self.halted = True
@@ -118,6 +206,7 @@ class Machine(object):
         self.tape = tape
         self.pos = pos
         self.i = 0
+        self.delay = delay
         self.halted = False
         self.cont(display, delay)
 
@@ -134,6 +223,9 @@ class Machine(object):
                 print(' ', end='')
         print(' ' + self.state)
         print((self.pos + abs(self.tape.negmin) + 1)*' ' + '^')
+
+    def __repr__(self):
+        return "<" + self.name.split('/')[-1] + ": " + self.state + ", " + str(self.pos) + ">" 
 
 def parse_machine(filename, maxiter=MAXLIFE):
     btck_to_none = lambda c: None if c == '`' else c
@@ -166,6 +258,6 @@ def parse_machine(filename, maxiter=MAXLIFE):
             rule = f.readline()
 
         if t == 'L':
-            return Machine(rules, startstate, linear=True, lifespan=maxiter)
+            return Machine(filename, rules, startstate, linear=True, lifespan=maxiter)
         elif t == 'P':
-            return Machine(rules, startstate, lifespan=maxiter)
+            return Machine(filename, rules, startstate, lifespan=maxiter)

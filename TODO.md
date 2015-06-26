@@ -1,6 +1,5 @@
 # TODO
 * Add scanned symbol wildcard to rule format
-* Improved handling of child machines; esp. so that machines that have been previously instantiated don't have to be parsed from their file again. 
 * Clean up existing code and machines
 * Build a universal TM in 2 Dimensions
 * Build a universal TM in 1 Dimension
