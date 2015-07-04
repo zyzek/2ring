@@ -114,6 +114,12 @@ class Plane(object):
         if value is None:
             del self.plane[key]
 
+    def __iter__(self):
+        return self.plane.__iter__()
+
+    def __next__(self):
+        return self.plane.__next__()
+
     def getbounds(self):
         k = self.plane.keys()
 

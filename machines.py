@@ -16,9 +16,9 @@ class Rule(object):
         return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
 
 class MachineContext(object):
-    def __init__(self, tape):
+    def __init__(self, tape, machines=[]):
         self.tape = tape
-        self.running = []
+        self.running = machines
         self.halted = []
         self.delay = 0
 
@@ -64,15 +64,17 @@ class MachineContext(object):
         self.running.insert(0,machine)
         machine.context = self
 
+    def step(self):
+        for i in range(len(self.running) - 1, -1, -1):
+            machine = self.running[i]
+            machine.advance()
+            if machine.halted:
+                self.halted.append(machine)
+                del self.running[i]
+    
     def run(self, display=True):
         while self.running: 
-            for i in range(len(self.running) - 1, -1, -1):
-                machine = self.running[i]
-                machine.advance()
-                if machine.halted:
-                    self.halted.append(machine)
-                    del self.running[i]
-
+            self.step()
             if display:
                 print(self.running)
                 print(self.tape, end='\n\n')
