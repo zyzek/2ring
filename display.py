@@ -3,11 +3,12 @@ import pygame, sys, os, time
 from pygame.locals import *
 pygame.init()
 
-delay = 0.1
-symsize = 16
+running = True
+delay = 0.05
+symsize = 8
 symbols = {}
 size = (800, 600)
-origin = (size[0]/4, size[1]/4)
+origin = (size[0]/2, size[1]/2)
 screen = None 
 
 string = []
@@ -17,6 +18,15 @@ symdict = {}
 symdict["*"] = "star"
 symdict["<"] = "langbrack"
 symdict[">"] = "rangbrack"
+symdict["│"] = "vline"
+symdict["─"] = "hline"
+symdict["┐"] = "ldcorn"
+symdict["┌"] = "rdcorn"
+symdict["└"] = "rucorn"
+symdict["┘"] = "lucorn"
+symdict["'"] = "quote"
+symdict['"'] = "dquote"
+symdict["?"] = "qmark"
 
 def init():
 	global screen
@@ -79,8 +89,12 @@ course = tapes.Plane(
 chacontext = machines.MachineContext(course)
 chacontext.create_machine("machines/snailchase.tm", (0,0))
 
-mcontext = chacontext
+lancontext = machines.MachineContext(tapes.Plane())
+lancontext.create_machine("machines/polylangton.tm", (0,0), 1000000)
 
+mcontext = lancontext
+
+delay = 0
 while True:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -93,6 +107,8 @@ while True:
 				string.append("space")
 			elif event.key == K_ESCAPE:
 				sys.exit()
+			elif event.key == K_RETURN:
+				running = not running
 			elif event.key == K_BACKSPACE and len(string) != 0:
 				string.pop()
 
@@ -107,8 +123,12 @@ while True:
 			cursor[1] += symsize
 			cursor[0] = 0
 
+
 	display_tape(mcontext)
-	mcontext.step()
+
+	if running:
+		mcontext.step()
+
 	time.sleep(delay)
 
 	pygame.display.flip()

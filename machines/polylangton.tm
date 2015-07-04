@@ -3,6 +3,8 @@
 # Ultimately three of them get in a tubule and fly off to infinity, but one stays behind, I think?.
 # Cooperative requirement to get a tubule going, maybe.
 # Will need to investigate once graphics are in.
+#
+# Answer: Nope, a single ant will start building one a few thousand steps in.
 
 P
 1
