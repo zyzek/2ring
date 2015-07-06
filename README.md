@@ -2,9 +2,12 @@
 In fiddling with Turing Machines, there are many extensions that can be made. Multiple machines on a single tape, 2-dimensional tapes, multi-head, multi-tape machines, machines spawning other machines: these are just a few possibilities.
 
 * **demo.py** runs some example machines.
+* **display.py** handles visuals
 * **machines.py** holds the machine class itself, and associated functions.
 * **tapes.py** contains a couple of tape formats.
 * The **machines/** directory holds descriptions of particular machines.
+
+The **enter** key pauses, resumes the simulation, **arrow keys** move your view around. **-** and **=** change the sim speed.
 
 # TM Description Format
 Machines are described in text files, conventionally ending in .tm

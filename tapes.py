@@ -86,7 +86,6 @@ class Tape(object):
         return str(['' if x is None else x for x in self.neg[self.negmin:]]) + str(['' if x is None else x for x in self.pos[:self.posmax + 1]])
 
 
-
 class Plane(object):
     """
     p should be a list of strings, such that

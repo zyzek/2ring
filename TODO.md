@@ -1,11 +1,11 @@
 # TODO
 * Visuals
-	* Get 2D machines displaying
-	* Genericise display.py
 	* Display current machine positions, states
 	* Timestep Counter
 	* Zoom level
-	* Current sim speed controls
+	* Distinguish sim speed from frame rate
+* Machine switching, resetting
+* Realtime tape manipulation
 * Add scanned symbol wildcard to rule format
 * Clean up existing code and machines
 * Build a universal TM in 2 Dimensions

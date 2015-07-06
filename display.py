@@ -1,18 +1,18 @@
 import machines, tapes
 import pygame, sys, os, time
 from pygame.locals import *
-pygame.init()
+
+clock = None
+font = None
 
 running = True
-delay = 0.05
-symsize = 8
+framerate = 60.0
+symsize = 16
 symbols = {}
 size = (800, 600)
-origin = (size[0]/2, size[1]/2)
+origin = (size[0]/3, size[1]/3)
+tileoffset = [0,0]
 screen = None 
-
-string = []
-cursor = [0,0]
 
 symdict = {}
 symdict["*"] = "star"
@@ -27,10 +27,15 @@ symdict["┘"] = "lucorn"
 symdict["'"] = "quote"
 symdict['"'] = "dquote"
 symdict["?"] = "qmark"
+symdict[";"] = "semicolon"
+symdict["|"] = "pipe"
 
 def init():
-	global screen
-	global symbols
+	global screen, symbols, clock, font 
+	pygame.init()
+
+	clock = pygame.time.Clock()
+	font = pygame.font.Font(None, 20)
 
 	screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 	for filename in os.listdir("symbols/"):
@@ -41,7 +46,6 @@ def init():
 		symbols[key] = pygame.transform.smoothscale(pygame.image.load("symbols/" + filename), (symsize,symsize))
 
 def get_sym_img(symbol):
-
 	try:
 		return symbols[symbol]
 	except KeyError:
@@ -52,83 +56,46 @@ def get_sym_img(symbol):
 
 def display_tape(mcontext):
 	for point in mcontext.tape:
-		coords = (origin[0] + point[0]*symsize, origin[1] + point[1]*symsize)
+		coords = (origin[0] + (tileoffset[0] + point[0])*symsize,
+				  origin[1] + (tileoffset[1] + point[1])*symsize)
 		screen.blit(get_sym_img(mcontext.tape[point]), coords)
 
-init()
-sub = tapes.Plane(['  3241',
-               	   '203196'])
-subcontext = machines.MachineContext(sub)
-subcontext.create_machine("machines/subtract-composite/subtract.tm", (6,0))
+def handle_events():
+	global tileoffset, framerate, running
 
-field = tapes.Plane(
-		["###########",
-         ">      @@ #",
-         "#     @@  #",
-         "#  @@  @  #",
-         "# @@      #",
-         "#  @      <",
-         "###########"])
-concontext = machines.MachineContext(field)
-concontext.create_machine("machines/conway/conway.tm", (1,1), 100000)
-
-course = tapes.Plane(
-		  ["┌       {       ┐",
-		  "                      ┌    ┐",
-		  "                           ",
-		  "'       >       u%    └         ┐",
-		  "                           *",
-		  "        *                  └    ┘",
-		  "└       )       ^       {       ┐",
-		  "",
-		  "                *",
-		  "                ,       v       i",
-		  "",
-		  "                                *",
-		  "                └       (       ┘"])
-chacontext = machines.MachineContext(course)
-chacontext.create_machine("machines/snailchase.tm", (0,0))
-
-lancontext = machines.MachineContext(tapes.Plane())
-lancontext.create_machine("machines/polylangton.tm", (0,0), 1000000)
-
-mcontext = lancontext
-
-delay = 0
-while True:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			sys.exit()
 
 		if event.type == pygame.KEYDOWN:
-			if event.unicode.isalnum():
-				string.append(event.unicode)
-			elif event.key == K_SPACE:
-				string.append("space")
+			if event.key == K_EQUALS:
+				framerate *= 1.1
+			elif event.key == K_MINUS:
+				framerate /= 1.1
 			elif event.key == K_ESCAPE:
 				sys.exit()
 			elif event.key == K_RETURN:
 				running = not running
-			elif event.key == K_BACKSPACE and len(string) != 0:
-				string.pop()
+			elif event.key == K_UP:
+				tileoffset[1] += 1
+			elif event.key == K_DOWN:
+				tileoffset[1] -= 1
+			elif event.key == K_RIGHT:
+				tileoffset[0] -= 1
+			elif event.key == K_LEFT:
+				tileoffset[0] += 1
+
+def step(mcontext):
+	global running, screen, size, symsize, framerate, clock, font
+
+	handle_events()	
 
 	screen.fill((0,0,0))
-	
-	cursor = [0,0]
-	for letter in string:
-		screen.blit(symbols[letter], cursor)
-		cursor[0] += symsize
-
-		if cursor[0] >= size[0] - symsize:
-			cursor[1] += symsize
-			cursor[0] = 0
-
-
 	display_tape(mcontext)
+	screen.blit(font.render("Target framerate: " + str(int(framerate)), 1, (200, 200, 200)), (0,0))
+	pygame.display.flip()
 
 	if running:
 		mcontext.step()
 
-	time.sleep(delay)
-
-	pygame.display.flip()
+	clock.tick(framerate)
