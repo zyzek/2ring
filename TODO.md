@@ -1,9 +1,10 @@
 # TODO
+* Update readme to include details of display and machine contexts
 * Visuals
-	* Display current machine positions, states
-	* Timestep Counter
+	* Display current machine positions, states, unique colour per machine
 	* Zoom level
 	* Distinguish sim speed from frame rate
+* Fix copy/restore mechanism
 * Machine switching, resetting
 * Realtime tape manipulation
 * Add scanned symbol wildcard to rule format

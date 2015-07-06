@@ -9,9 +9,9 @@
 P
 1
 
-1 ` -> 2 ~ N machines/langton.tm -5,0
-2 ` -> 3 ~ N machines/langton.tm 5,0
-3 ` -> 4 ~ N machines/langton.tm 0,-5
-4 ` -> loop ~ N machines/langton.tm 0,5
+1 ` -> 2 ~ N langton.tm -5,0
+2 ` -> 3 ~ N langton.tm 5,0
+3 ` -> 4 ~ N langton.tm 0,-5
+4 ` -> loop ~ N langton.tm 0,5
 
 loop `* -> loop ~ R

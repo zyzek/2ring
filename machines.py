@@ -1,8 +1,8 @@
 # encoding: utf-8
-import time
+import time, copy
 import tapes
 
-MAXLIFE = 1000
+MAXLIFE = 100000
 
 class Rule(object):
     def __init__(self, newstate='q0', newsym='e', direction='L', spawn=False, sp_off=(0,0)):
@@ -16,17 +16,24 @@ class Rule(object):
         return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
 
 class MachineContext(object):
-    def __init__(self, tape, machines=[]):
+    def __init__(self, tape):
         self.tape = tape
-        self.running = machines
+        self.running = []
         self.halted = []
         self.delay = 0
+
+    def checkpoint(self):
+        self.copy = copy.deepcopy(self)
+
+    def restore(self):
+        self = self.copy
+        self.checkpoint()
 
     def create_machine(self, path, pos=None, lifespan=MAXLIFE, parent=None):
         youngling = None
 
         for machine in self.halted:
-            if path == machine.name:
+            if path == machine.path:
                 youngling = machine
                 break
 
@@ -41,8 +48,8 @@ class MachineContext(object):
             return
 
         for machine in self.running:
-            if path == machine.name:
-                youngling = Machine(machine.name,
+            if path == machine.path:
+                youngling = Machine(machine.path,
                                     machine.rules,
                                     machine.start,
                                     machine.linear,
@@ -81,8 +88,8 @@ class MachineContext(object):
                 time.sleep(self.delay)
 
 class Machine(object):
-    def __init__(self, name, rules, start='q0', linear=False, lifespan=MAXLIFE, tape=None):
-        self.name = name
+    def __init__(self, path, rules, start='q0', linear=False, lifespan=MAXLIFE, tape=None):
+        self.path = path
         self.rules = rules
         self.start = start
         self.state = start
@@ -170,7 +177,9 @@ class Machine(object):
         self.state = op.newstate
 
         if op.spawn:
-            offspring = parse_machine(op.spawn, self.lifespan - self.i)
+            offpath = "/".join(self.path.split('/')[:-1] + [op.spawn])
+
+            offspring = parse_machine(offpath, self.lifespan - self.i)
             offspring.tape = self.tape
             offspring.pos = self.get_offset_pos(op)
             
@@ -178,11 +187,11 @@ class Machine(object):
                 self.context = MachineContext(self.tape)
                 self.context.delay = self.delay
                 self.context.add_machine(self)
-                self.context.create_machine(op.spawn, self.get_offset_pos(op), self.lifespan - self.i)
+                self.context.create_machine(offpath, self.get_offset_pos(op), self.lifespan - self.i)
                 self.move_sequence(op.direction)
                 self.context.run()
             else:
-                self.context.create_machine(op.spawn, self.get_offset_pos(op), self.lifespan - self.i, self)
+                self.context.create_machine(offpath, self.get_offset_pos(op), self.lifespan - self.i, self)
                 
 
         self.move_sequence(op.direction)
@@ -227,12 +236,12 @@ class Machine(object):
         print((self.pos + abs(self.tape.negmin) + 1)*' ' + '^')
 
     def __repr__(self):
-        return "<" + self.name.split('/')[-1] + ": " + self.state + ", " + str(self.pos) + ">" 
+        return "<" + self.path.split('/')[-1] + ": " + self.state + ", " + str(self.pos) + ">" 
 
-def parse_machine(filename, maxiter=MAXLIFE):
+def parse_machine(path, maxiter=MAXLIFE):
     btck_to_none = lambda c: None if c == '`' else c
 
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8') as f:
         t = f.readline()
         while t[0] == '#' or t == '\n':
             t = f.readline()
@@ -260,6 +269,6 @@ def parse_machine(filename, maxiter=MAXLIFE):
             rule = f.readline()
 
         if t == 'L':
-            return Machine(filename, rules, startstate, linear=True, lifespan=maxiter)
+            return Machine(path, rules, startstate, linear=True, lifespan=maxiter)
         elif t == 'P':
-            return Machine(filename, rules, startstate, lifespan=maxiter)
+            return Machine(path, rules, startstate, lifespan=maxiter)

@@ -25,7 +25,7 @@ class Tape(object):
         value = self[self.index]
         self.index += 1
         return value
-
+    
     def expand_lists(self, i):
         if i >= 0:
             while i >= len(self.pos):

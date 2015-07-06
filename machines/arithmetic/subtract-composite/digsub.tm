@@ -3,7 +3,7 @@ P
 chkcry
 
 chkcry f -> sub ~ U
-chkcry n -> chkcry w N machines/subtract-composite/carry.tm
+chkcry n -> chkcry w N carry.tm
 chkcry w -> chkcry ~ N
 chkcry 0123456789 -> done ~ H
 

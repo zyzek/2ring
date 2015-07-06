@@ -25,7 +25,7 @@ blong i -> done b H
 # This is done by spawning a new TM to compare them, waiting on the spot for an answer.
 lutlmost ` -> comp ~ R
 comp 0123456789 -> cdig ~ D
-cdig ` -> cdig ^ N machines/subtract-composite/digineq.tm
+cdig ` -> cdig ^ N digineq.tm
 cdig ^ -> cdig ^ N
 cdig f -> tu ` U
 tu 0123456789 -> tlong ~ U 

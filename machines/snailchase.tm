@@ -135,10 +135,10 @@ left > -> right ^ R
 right > -> right ^ R
 
 # Egg
-up * -> up ~ U machines/snailchase.tm
-down * -> down ~ D machines/snailchase.tm
-left * -> left ~ L machines/snailchase.tm
-right * -> right ~ R machines/snailchase.tm
+up * -> up ~ U snailchase.tm
+down * -> down ~ D snailchase.tm
+left * -> left ~ L snailchase.tm
+right * -> right ~ R snailchase.tm
 up oO0 -> up ~ U
 down oO0 -> down ~ D
 left oO0 -> left ~ L
