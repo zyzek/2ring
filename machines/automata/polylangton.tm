@@ -12,6 +12,6 @@ P
 1 ` -> 2 ~ N langton.tm -5,0
 2 ` -> 3 ~ N langton.tm 5,0
 3 ` -> 4 ~ N langton.tm 0,-5
-4 ` -> loop ~ N langton.tm 0,5
+4 ` -> done ~ N langton.tm 0,5
 
-loop `* -> loop ~ R
+done `* -> done ~ H

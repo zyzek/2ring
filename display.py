@@ -13,7 +13,7 @@ clock = None
 font = None
 
 running = True
-framerate = 60.0
+framerate = 30.0
 elapsed = 0
 symsize = 16
 symbols = {}
@@ -92,7 +92,7 @@ def display_tape():
 def display_UI():
 	global font, framerate, elapsed
 
-	screen.blit(font.render("Target framerate: " + str(int(framerate)), 1, white), (0,0))
+	screen.blit(font.render("Target framerate: " + str(int(framerate) if framerate < 1000 else "MAX"), 1, white), (0,0))
 	screen.blit(font.render("Elapsed ticks: " + str(elapsed), 1, white), (0, uisize//2))
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
 
@@ -110,9 +110,9 @@ def handle_events():
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_EQUALS:
-				framerate *= 1.1
+				framerate = framerate*1.3 if framerate < 1000 else framerate
 			elif event.key == K_MINUS:
-				framerate /= 1.1
+				framerate = framerate/1.3 if framerate > 1 else framerate
 			elif event.key == K_ESCAPE:
 				sys.exit()
 			elif event.key == K_RETURN:
@@ -144,4 +144,5 @@ def step():
 		mcontext.step()
 		elapsed += 1
 
-	clock.tick(framerate)
+	if framerate < 1000:
+		clock.tick(framerate)
