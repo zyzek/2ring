@@ -29,6 +29,13 @@ class MachineContext(object):
         self = self.copy
         self.checkpoint()
 
+    def get_machine_col(cls, machine):
+        mhash = hash(machine.path)
+
+        return (mhash%0x100,
+                (mhash//0x100)%0x100,
+                (mhash//0x10000)%0x100)
+
     def create_machine(self, path, pos=None, lifespan=MAXLIFE, parent=None):
         youngling = None
 
@@ -66,8 +73,10 @@ class MachineContext(object):
             youngling.context = self
                 
         self.running.insert(self.running.index(parent) if parent else 0, youngling)
+        youngling.color = self.get_machine_col(youngling)
 
     def add_machine(self, machine):
+        machine.color = self.get_machine_col(machine)
         self.running.insert(0,machine)
         machine.context = self
 

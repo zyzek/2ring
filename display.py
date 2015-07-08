@@ -9,11 +9,13 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 
+machine_cols = {}
+
 clock = None
 font = None
 
 running = True
-framerate = 30.0
+framerate = 60.0
 elapsed = 0
 symsize = 16
 symbols = {}
@@ -65,7 +67,6 @@ def init(initcontext):
 	uiicons["runimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "running.bmp"), (uisize,uisize))
 	uiicons["stopimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "stopped.bmp"), (uisize,uisize))
 
-
 def get_sym_img(symbol):
 	try:
 		return symbols[symbol]
@@ -86,7 +87,7 @@ def display_tape():
 		mrect = pygame.Rect(origin[0] + (tileoffset[0] + machine.pos[0])*symsize,
 							origin[1] + (tileoffset[1] + machine.pos[1])*symsize,
 							symsize, symsize)
-		pygame.draw.rect(screen, red, mrect, 2)
+		pygame.draw.rect(screen, machine.color, mrect, 2)
 
 
 def display_UI():
