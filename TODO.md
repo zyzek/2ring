@@ -1,7 +1,6 @@
 # TODO
 * Update readme to include details of display and machine contexts
-* Visuals
-	* Zoom level
+* Remove linear machines
 * Fix copy/restore mechanism
 * Machine switching, resetting
 * Allow multiple machines to be defined in one file, collapse, e.g., composite-subtract into a single file

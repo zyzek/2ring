@@ -9,7 +9,6 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 gridcolour = (0, 20, 40)
 gridhighlight = (0, 30, 45)
-
 machine_cols = {}
 
 clock = None
@@ -34,7 +33,6 @@ screen = None
 display_machines = True
 
 mcontext = None
-
 symdict = {}
 symdict["*"] = "star"
 symdict["<"] = "langbrack"
@@ -63,16 +61,19 @@ def init(initcontext):
 	font = pygame.font.Font(None, uisize//2)
 
 	screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+	reload_sym_images()
+
+	uiicons["runrect"] = pygame.Rect(screen.get_size()[0] - uisize, 0, uisize, uisize)
+	uiicons["runimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "running.bmp"), (uisize,uisize))
+	uiicons["stopimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "stopped.bmp"), (uisize,uisize))
+
+def reload_sym_images():
 	for filename in os.listdir(symdir):
 		key = filename[:-4]
 		if key.endswith("_"):
 			key = key[:-1]
 
 		symbols[key] = pygame.transform.smoothscale(pygame.image.load(symdir + filename), (symsize,symsize))
-
-	uiicons["runrect"] = pygame.Rect(screen.get_size()[0] - uisize, 0, uisize, uisize)
-	uiicons["runimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "running.bmp"), (uisize,uisize))
-	uiicons["stopimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "stopped.bmp"), (uisize,uisize))
 
 def get_sym_img(symbol):
 	try:
@@ -124,7 +125,7 @@ def display_UI():
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
 
 def handle_events():
-	global running, simrate, timestep, display_machines, mcontext
+	global running, simrate, timestep, display_machines, mcontext, symsize
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -142,18 +143,24 @@ def handle_events():
 			elif event.key == K_MINUS:
 				simrate = simrate/1.3 if simrate > 1 else simrate
 				timestep = 1000.0/simrate
+			elif event.key == K_LEFTBRACKET:
+				symsize = symsize//2 if symsize >= 4 else symsize
+				reload_sym_images()
+			elif event.key == K_RIGHTBRACKET:
+				symsize = symsize*2 if symsize < 128 else symsize
+				reload_sym_images()
 			elif event.key == K_ESCAPE:
 				sys.exit()
 			elif event.key == K_RETURN:
 				running = not running
 			elif event.key == K_UP:
-				tileoffset[1] += 1
+				tileoffset[1] += 64//symsize + 1
 			elif event.key == K_DOWN:
-				tileoffset[1] -= 1
+				tileoffset[1] -= 64//symsize + 1
 			elif event.key == K_RIGHT:
-				tileoffset[0] -= 1
+				tileoffset[0] -= 64//symsize + 1
 			elif event.key == K_LEFT:
-				tileoffset[0] += 1
+				tileoffset[0] += 64//symsize + 1
 			elif event.key == K_s:
 				running = True
 				s_step()
@@ -162,13 +169,11 @@ def handle_events():
 			elif event.key == K_m:
 				display_machines = not display_machines
 			elif event.key == K_r:
-				print("restoring")
 				mcontext = mcontext.restore()
 
 
 def render():
 	handle_events()	
-
 	screen.fill(black)
 	display_tape()
 	display_UI()

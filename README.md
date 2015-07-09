@@ -6,6 +6,7 @@ In fiddling with Turing Machines, there are many extensions that can be made. Mu
     Enter           Pause/Resume sim
     S               Progress the sim by single steps
     -/=             Change sim speed
+    [/]				Zoom
     M               Toggle machine visibility
     R               Reset to initial state
     Arrow Keys      Move view around
