@@ -2,7 +2,6 @@
 # If bottom number is larger, interchange them (simultaneous flip with child), write down a minus sign.
 # Subtract digit by digit, perform borrowing with child machines
 
-P
 rmlead1
 
 rmlead1 ` -> rmlead2 y D rmlead.tm -1,0

@@ -3,8 +3,6 @@
 # Head should begin at the left of the first number.
 # The result will be placed left of the |.
 
-L
-
 LSB1
 
 # Go to the least significant bit of the first number, remember its value, and start looking for the LSB of the second number.

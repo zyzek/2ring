@@ -1,6 +1,5 @@
 # Worker for swap.tm for simultaneous element swapping.
 
-P
 acquire
 
 acquire 0 -> 0 ~ D

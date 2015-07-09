@@ -1,13 +1,12 @@
 # TODO
-* Update readme to include details of display and machine contexts
-* Remove linear machines
-* Fix copy/restore mechanism
-* Machine switching, resetting
+* Merge symbols into a single file, split individuals out at load time
+* Transparent symbol backgrounds
+* Symbol filename -> key file
+* Machine switching
 * Allow multiple machines to be defined in one file, collapse, e.g., composite-subtract into a single file
 * Realtime tape manipulation
 * Per-machine tile sets
 * Add scanned symbol wildcard to rule format
-* Clean up existing code and machines
 * Build a universal TM in 2 Dimensions
 * Build a universal TM in 1 Dimension
 * Run a simple TM (e.g. Unary Adder?) with the 1D UTM inside the 2D UTM

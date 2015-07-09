@@ -1,6 +1,5 @@
 # Checks how many neighbours of a cell are alive
 
-P
 C
 
 C #<>`*.@ -> UL ~ UL

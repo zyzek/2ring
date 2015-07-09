@@ -6,7 +6,6 @@
 #
 # Answer: Nope, a single ant will start building one a few thousand steps in.
 
-P
 1
 
 1 ` -> 2 ~ N langton.tm -5,0

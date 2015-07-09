@@ -1,4 +1,4 @@
-import machines, tapes
+import machines
 import pygame, sys, os, time
 from pygame.locals import *
 
@@ -110,10 +110,10 @@ def display_tape():
 								symsize, symsize)
 			pygame.draw.rect(screen, machine.color, mrect, 2)
 
-			screen.blit(font.render(machine.path.split("/")[-1], 1, white), (m*110 + 5, screen.get_size()[1]-uisize))
-			screen.blit(font.render(str(machine.pos), 1, white), (m*110 + 5, screen.get_size()[1]-uisize//2))
-			screen.blit(font.render(str(machine.state), 1, white), (m*110 + 40, screen.get_size()[1]-uisize//2))
 			mrect = pygame.Rect(m*110 + 2, screen.get_size()[1]-(uisize+5), 100, uisize)
+			pygame.draw.rect(screen, black, mrect, 0)
+			screen.blit(font.render(machine.path.split("/")[-1], 1, white), (m*110 + 5, screen.get_size()[1]-uisize))
+			screen.blit(font.render(str(machine.pos) + " " + str(machine.state), 1, white), (m*110 + 5, screen.get_size()[1]-uisize//2))
 			pygame.draw.rect(screen, machine.color, mrect, 2)
 
 			m += 1

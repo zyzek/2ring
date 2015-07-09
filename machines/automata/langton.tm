@@ -1,6 +1,5 @@
 #Langton's Ant, as a 2D TM
 
-P
 up
 
 up ` -> left * L

@@ -27,7 +27,6 @@
 # Its height must be odd, and the TM must start somewhere in the interior.
 # The border characters count as dead cells.
 
-P
 checkcellRD
 
 checkcellRD `. -> deadcellRD ~ N optneighbours.tm

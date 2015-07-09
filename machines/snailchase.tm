@@ -1,6 +1,5 @@
 # snail chase
 
-P
 hatch
 
 hatch `│┐┌)({} -> up ~ N

@@ -3,7 +3,6 @@
 # Then writes a minus sign in the next row down.
 # Head should start one place to the right of the upper row.
 
-P
 init
 
 init ` -> acquire s DL swapwrk.tm -1,0

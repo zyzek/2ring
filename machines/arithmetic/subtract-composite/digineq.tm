@@ -4,7 +4,6 @@
 # n if the nearer,
 # e if they are equal.
 
-P
 D
 
 # Determine in what direction to move

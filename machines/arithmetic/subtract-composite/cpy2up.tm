@@ -1,4 +1,3 @@
-P
 start
 
 start w -> fetch ~ UU

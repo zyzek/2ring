@@ -1,4 +1,3 @@
-P
 init
 
 init ` -> finsig 0 R

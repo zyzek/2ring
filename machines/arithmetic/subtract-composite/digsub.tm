@@ -1,5 +1,3 @@
-
-P
 chkcry
 
 chkcry f -> sub ~ U

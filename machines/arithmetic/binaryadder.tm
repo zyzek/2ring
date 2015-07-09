@@ -1,7 +1,6 @@
 # Binary Adder 
 # The input tape must be of the form "|m,n;" where m and n are binary strings.
 # The result will be placed left of the |. 
-L
 LSB1
 LSB1 0 -> LSB1 0 R
 LSB1 1 -> LSB1 1 R

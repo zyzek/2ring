@@ -3,7 +3,6 @@
 # Machine should start one square to the right of the top number,
 # Places a 't' in that square if the top number is larger, 'b' if the bottom one.
 
-P
 gotl
 
 # Find leftmost digit of top number and move down one place.
