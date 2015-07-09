@@ -12,11 +12,16 @@ red = (255, 0, 0)
 machine_cols = {}
 
 clock = None
-font = None
-
 running = True
 framerate = 60.0
+maxsimrate = 2000
+simrate = 120.0
+timestep = 1000.0/simrate
 elapsed = 0
+last_time = 0
+accumulator = 0
+
+font = None
 symsize = 16
 symbols = {}
 uisize = 32
@@ -24,10 +29,10 @@ uiicons = {}
 size = (800, 600)
 origin = (size[0]/3, size[1]/3)
 tileoffset = [0,0]
-screen = None 
+screen = None
+display_machines = True
 
 mcontext = None
-
 
 symdict = {}
 symdict["*"] = "star"
@@ -53,6 +58,7 @@ def init(initcontext):
 	mcontext.checkpoint()
 
 	clock = pygame.time.Clock()
+	last_time = pygame.time.get_ticks()
 	font = pygame.font.Font(None, uisize//2)
 
 	screen = pygame.display.set_mode(size, pygame.RESIZABLE)
@@ -77,28 +83,26 @@ def get_sym_img(symbol):
 			return symbols["ERR"]
 
 def display_tape():
-	global mcontext
 	for point in mcontext.tape:
 		coords = (origin[0] + (tileoffset[0] + point[0])*symsize,
 				  origin[1] + (tileoffset[1] + point[1])*symsize)
 		screen.blit(get_sym_img(mcontext.tape[point]), coords)
 
-	for machine in mcontext.running:
-		mrect = pygame.Rect(origin[0] + (tileoffset[0] + machine.pos[0])*symsize,
-							origin[1] + (tileoffset[1] + machine.pos[1])*symsize,
-							symsize, symsize)
-		pygame.draw.rect(screen, machine.color, mrect, 2)
+	if display_machines:
+		for machine in mcontext.running:
+			mrect = pygame.Rect(origin[0] + (tileoffset[0] + machine.pos[0])*symsize,
+								origin[1] + (tileoffset[1] + machine.pos[1])*symsize,
+								symsize, symsize)
+			pygame.draw.rect(screen, machine.color, mrect, 2)
 
 
 def display_UI():
-	global font, framerate, elapsed
-
-	screen.blit(font.render("Target framerate: " + str(int(framerate) if framerate < 1000 else "MAX"), 1, white), (0,0))
+	screen.blit(font.render("Target sim rate: " + str(int(simrate) if simrate < maxsimrate else "MAX") + " ticks/s", 1, white), (0,0))
 	screen.blit(font.render("Elapsed ticks: " + str(elapsed), 1, white), (0, uisize//2))
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
 
 def handle_events():
-	global tileoffset, framerate, running, mcontext
+	global running, simrate, timestep, display_machines
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -111,9 +115,11 @@ def handle_events():
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_EQUALS:
-				framerate = framerate*1.3 if framerate < 1000 else framerate
+				simrate = simrate*1.3 if simrate < maxsimrate else simrate
+				timestep = 1000.0/simrate
 			elif event.key == K_MINUS:
-				framerate = framerate/1.3 if framerate > 1 else framerate
+				simrate = simrate/1.3 if simrate > 1 else simrate
+				timestep = 1000.0/simrate
 			elif event.key == K_ESCAPE:
 				sys.exit()
 			elif event.key == K_RETURN:
@@ -126,14 +132,19 @@ def handle_events():
 				tileoffset[0] -= 1
 			elif event.key == K_LEFT:
 				tileoffset[0] += 1
+			elif event.key == K_s:
+				running = True
+				s_step()
+				render()
+				running = False
+			elif event.key == K_m:
+				display_machines = not display_machines
 			elif event.key == K_r:
 				print("restoring")
 				mcontext.restore()
 
 
-def step():
-	global running, screen, size, symsize, framerate, clock, elapsed, mcontext
-
+def render():
 	handle_events()	
 
 	screen.fill(black)
@@ -141,9 +152,26 @@ def step():
 	display_UI()
 	pygame.display.flip()
 
+
+def s_step():
+	global elapsed, running, mcontext
+
 	if running:
 		mcontext.step()
 		elapsed += 1
 
-	if framerate < 1000:
-		clock.tick(framerate)
+
+def run():
+	global timestep, framerate, last_time, current_time, accumulator
+
+	while True:
+		current_time = pygame.time.get_ticks()
+		accumulator += current_time - last_time
+		last_time = current_time
+
+		while accumulator >= timestep:
+			s_step()
+			accumulator -= timestep
+
+		render()
+		clock.tick(framerate)	

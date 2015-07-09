@@ -24,9 +24,13 @@ field = t.Plane(
 		["###########",
          ">      @@ #",
          "#     @@  #",
-         "#  @@  @  #",
+         "#      @  #",
+         "#  @@     #",
          "# @@      #",
-         "#  @      <",
+         "#  @      #",
+         "#         #",
+         "#         #",
+         "#         <",
          "###########"])
 concontext = m.MachineContext(field)
 concontext.create_machine("machines/automata/conway/conway.tm", (1,1), 100000)
@@ -53,10 +57,9 @@ chacontext.create_machine("machines/snailchase.tm", (0,0))
 lancontext = m.MachineContext(t.Plane())
 lancontext.create_machine("machines/automata/polylangton.tm", (0,0), 1000000)
 
-mcontext = chacontext
+mcontext = concontext
 
 d.init(mcontext)
 d.running = False
 
-while True:
-	d.step()
+d.run()

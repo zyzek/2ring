@@ -3,7 +3,6 @@
 * Visuals
 	* Display current machine states
 	* Zoom level
-	* Distinguish sim speed from frame rate
 * Fix copy/restore mechanism
 * Machine switching, resetting
 * Allow multiple machines to be defined in one file, collapse, e.g., composite-subtract into a single file
