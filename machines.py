@@ -27,6 +27,7 @@ class MachineContext(object):
     def restore(self):
         self = self.copy
         self.checkpoint()
+        return self
 
     def get_machine_col(cls, machine):
         mhash = hash(machine.path)

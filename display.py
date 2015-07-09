@@ -124,7 +124,7 @@ def display_UI():
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
 
 def handle_events():
-	global running, simrate, timestep, display_machines
+	global running, simrate, timestep, display_machines, mcontext
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -163,7 +163,7 @@ def handle_events():
 				display_machines = not display_machines
 			elif event.key == K_r:
 				print("restoring")
-				mcontext.restore()
+				mcontext = mcontext.restore()
 
 
 def render():

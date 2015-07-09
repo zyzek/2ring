@@ -56,7 +56,7 @@ chacontext.create_machine("machines/snailchase.tm", (0,0))
 lancontext = m.MachineContext(t.Plane())
 lancontext.create_machine("machines/automata/polylangton.tm", (0,0), 1000000)
 
-mcontext = subcontext
+mcontext = lancontext
 
 d.init(mcontext)
 d.running = False
