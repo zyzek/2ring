@@ -1,4 +1,3 @@
-# encoding: utf-8
 import machines as m
 import tapes as t
 import display as d
@@ -57,7 +56,7 @@ chacontext.create_machine("machines/snailchase.tm", (0,0))
 lancontext = m.MachineContext(t.Plane())
 lancontext.create_machine("machines/automata/polylangton.tm", (0,0), 1000000)
 
-mcontext = concontext
+mcontext = subcontext
 
 d.init(mcontext)
 d.running = False

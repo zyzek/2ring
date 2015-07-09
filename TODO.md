@@ -1,7 +1,6 @@
 # TODO
 * Update readme to include details of display and machine contexts
 * Visuals
-	* Display current machine states
 	* Zoom level
 * Fix copy/restore mechanism
 * Machine switching, resetting

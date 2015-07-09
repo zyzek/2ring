@@ -7,7 +7,8 @@ symdir = "img/symbols/"
 
 white = (255, 255, 255)
 black = (0, 0, 0)
-red = (255, 0, 0)
+gridcolour = (0, 20, 40)
+gridhighlight = (0, 30, 45)
 
 machine_cols = {}
 
@@ -27,7 +28,7 @@ symbols = {}
 uisize = 32
 uiicons = {}
 size = (800, 600)
-origin = (size[0]/3, size[1]/3)
+origin = (size[0]//3 - (size[0]//3)%symsize, size[1]//3 - (size[1]//3)%symsize)
 tileoffset = [0,0]
 screen = None
 display_machines = True
@@ -51,7 +52,7 @@ symdict[";"] = "semicolon"
 symdict["|"] = "pipe"
 
 def init(initcontext):
-	global screen, symbols, clock, font, mcontext 
+	global screen, symbols, clock, font, mcontext, last_time
 	pygame.init()
 
 	mcontext = initcontext
@@ -82,18 +83,39 @@ def get_sym_img(symbol):
 		except KeyError:
 			return symbols["ERR"]
 
+def draw_grid():
+	for i in range(screen.get_size()[0]//symsize + 1):
+		pygame.draw.line(screen, gridcolour, (i*symsize, 0), (i*symsize, screen.get_size()[1]), 2)
+	for i in range(screen.get_size()[1]//symsize + 1):
+		pygame.draw.line(screen, gridcolour, (0, i*symsize), (screen.get_size()[0], i*symsize), 2)
+
+	for i in range(-1, screen.get_size()[0]//(symsize*5) + 1):
+		for j in range(-1, screen.get_size()[1]//(symsize*5) + 1):
+			pygame.draw.circle(screen, gridhighlight, ((5*i + tileoffset[0]%5)*symsize + 1, (5*j+tileoffset[1]%5)*symsize + 1), 2)
+
 def display_tape():
+	draw_grid()
+
 	for point in mcontext.tape:
 		coords = (origin[0] + (tileoffset[0] + point[0])*symsize,
 				  origin[1] + (tileoffset[1] + point[1])*symsize)
 		screen.blit(get_sym_img(mcontext.tape[point]), coords)
 
 	if display_machines:
-		for machine in mcontext.running:
+		m = 0
+		for machine in mcontext.running[::-1]:
 			mrect = pygame.Rect(origin[0] + (tileoffset[0] + machine.pos[0])*symsize,
 								origin[1] + (tileoffset[1] + machine.pos[1])*symsize,
 								symsize, symsize)
 			pygame.draw.rect(screen, machine.color, mrect, 2)
+
+			screen.blit(font.render(machine.path.split("/")[-1], 1, white), (m*110 + 5, screen.get_size()[1]-uisize))
+			screen.blit(font.render(str(machine.pos), 1, white), (m*110 + 5, screen.get_size()[1]-uisize//2))
+			screen.blit(font.render(str(machine.state), 1, white), (m*110 + 40, screen.get_size()[1]-uisize//2))
+			mrect = pygame.Rect(m*110 + 2, screen.get_size()[1]-(uisize+5), 100, uisize)
+			pygame.draw.rect(screen, machine.color, mrect, 2)
+
+			m += 1
 
 
 def display_UI():

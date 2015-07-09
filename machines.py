@@ -1,4 +1,3 @@
-# encoding: utf-8
 import time, copy
 import tapes
 
@@ -202,7 +201,6 @@ class Machine(object):
             else:
                 self.context.create_machine(offpath, self.get_offset_pos(op), self.lifespan - self.i, self)
                 
-
         self.move_sequence(op.direction)
 
         if self.i >= self.lifespan:
@@ -231,7 +229,6 @@ class Machine(object):
         self.cont(display, delay)
 
     def print_state(self):
-        #print(self.state, self.pos)
         print(self.tape, end='\n\n')
 
     def linprint(self):
