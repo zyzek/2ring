@@ -1,6 +1,7 @@
 # TODO
 * Merge symbols into a single file, split individuals out at load time
 * Transparent symbol backgrounds
+* Machine detail box overflow fix 
 * Symbol filename -> key file
 * Machine switching
 * Allow multiple machines to be defined in one file, collapse, e.g., composite-subtract into a single file

@@ -1,6 +1,7 @@
-import time, copy
+import time, copy, random
 
 MAXLIFE = 100000
+MAXMACHINES = 30
 
 class Plane(object):
     """
@@ -58,16 +59,19 @@ class Plane(object):
 
         return out
 
+
 class Rule(object):
-    def __init__(self, newstate='q0', newsym='e', direction='L', spawn=False, sp_off=(0,0)):
+    def __init__(self, newstate='q0', newsym=['E'], direction='L', spawn=False, sp_off=(0,0), sp_state=None):
         self.newsym = newsym
         self.newstate = newstate
         self.direction = direction
         self.spawn = spawn
         self.sp_off = sp_off
+        self.sp_state = sp_state
 
     def __repr__(self):
         return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
+
 
 class MachineContext(object):
     def __init__(self, tape):
@@ -91,7 +95,10 @@ class MachineContext(object):
                 (mhash//0x100)%0x100,
                 (mhash//0x10000)%0x100)
 
-    def create_machine(self, path, pos=None, lifespan=MAXLIFE, parent=None):
+    def create_machine(self, path, pos=None, state=None, lifespan=MAXLIFE, parent=None):
+        if len(self.running) > MAXMACHINES: 
+            return
+
         youngling = None
 
         for machine in self.halted:
@@ -104,6 +111,8 @@ class MachineContext(object):
             youngling.lifespan = lifespan
             if pos:
                 youngling.pos = pos
+            if state:
+                youngling.state = state
 
             self.running.insert(self.running.index(parent) if parent else 0, youngling)
             self.halted.remove(youngling)
@@ -116,7 +125,10 @@ class MachineContext(object):
                                     machine.start,
                                     lifespan,
                                     self.tape)
-                youngling.pos = pos
+                if pos:
+                    youngling.pos = pos
+                if state:
+                    youngling.state = state
                 youngling.context = self
 
         if not youngling:
@@ -124,12 +136,17 @@ class MachineContext(object):
             youngling.tape = self.tape
             if pos:
                 youngling.pos = pos
+            if state:
+                youngling.state = state
             youngling.context = self
                 
         self.running.insert(self.running.index(parent) if parent else 0, youngling)
         youngling.color = self.get_machine_col(youngling)
 
     def add_machine(self, machine):
+        if len(self.running) > MAXMACHINES: 
+            return
+
         machine.color = self.get_machine_col(machine)
         self.running.insert(0,machine)
         machine.context = self
@@ -219,7 +236,7 @@ class Machine(object):
         self.i += 1
 
         op = self.rules[(self.state, self.tape[self.pos])]
-        self.tape[self.pos] = op.newsym
+        self.tape[self.pos] = random.choice(op.newsym)
         self.state = op.newstate
 
         if op.spawn:
@@ -233,11 +250,11 @@ class Machine(object):
                 self.context = MachineContext(self.tape)
                 self.context.delay = self.delay
                 self.context.add_machine(self)
-                self.context.create_machine(offpath, self.get_offset_pos(op), self.lifespan - self.i)
+                self.context.create_machine(offpath, self.get_offset_pos(op), op.sp_state if op.sp_state else None, self.lifespan - self.i, self)
                 self.move_sequence(op.direction)
                 self.context.run()
             else:
-                self.context.create_machine(offpath, self.get_offset_pos(op), self.lifespan - self.i, self)
+                self.context.create_machine(offpath, self.get_offset_pos(op), op.sp_state if op.sp_state else None, self.lifespan - self.i, self)
                 
         self.move_sequence(op.direction)
 
@@ -284,16 +301,17 @@ def parse_machine(path, maxiter=MAXLIFE):
         rules = {}
         rule = f.readline()
 
+        # Rule format: state s -> newstate n M [childpath [xoff,yoff]]
         while rule != '':
-            if rule != '\n' and rule[0] != '#':
+            if rule != '\n' and rule.strip()[0] != '#':
                 rule = rule.strip().split()
                 for s in rule[1]:
                     rules[(rule[0], btck_to_none(s))] = Rule(rule[3], 
-                                                             btck_to_none(s) if rule[4] == '~' else btck_to_none(rule[4]), 
+                                                             [btck_to_none(s) if c == '~' else btck_to_none(c) for c in rule[4]], 
                                                              rule[5], 
-                                                             False if len(rule) < 7 else rule[6])
-                    if len(rule) > 7:
-                        rules[(rule[0], btck_to_none(s))].sp_off = [int(x) for x in rule[7].split(',')]
+                                                             False if len(rule) < 7 else rule[6],
+                                                             (0,0) if len(rule) < 8 else [int(x) for x in rule[7].split(',')],
+                                                             None if len(rule) < 9 else rule[8])
 
             rule = f.readline()
 

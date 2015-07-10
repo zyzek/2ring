@@ -31,7 +31,7 @@ field = m.Plane(
          "#         <",
          "###########"])
 concontext = m.MachineContext(field)
-concontext.create_machine("machines/automata/conway/conway.tm", (1,1), 100000)
+concontext.create_machine("machines/automata/conway/conway.tm", (1,1), None, 100000)
 
 # A dumb tail-chaser.
 course = m.Plane(
@@ -49,13 +49,16 @@ course = m.Plane(
 		  "                                *",
 		  "                └       (       ┘"])
 chacontext = m.MachineContext(course)
-chacontext.create_machine("machines/snailchase.tm", (0,0))
+chacontext.create_machine("machines/snailchase.tm")
 
 # Langton's ant, in quadruplicate.
 lancontext = m.MachineContext(m.Plane())
-lancontext.create_machine("machines/automata/polylangton.tm", (0,0), 1000000)
+lancontext.create_machine("machines/automata/polylangton.tm", (0,0), None, 1000000)
 
-d.init(unacontext)
+arbcontext = m.MachineContext(m.Plane())
+arbcontext.create_machine("machines/tree.tm")
+
+d.init(arbcontext)
 d.running = False
 
 d.run()
