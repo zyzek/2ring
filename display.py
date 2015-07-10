@@ -27,6 +27,7 @@ symbols = {}
 uisize = 32
 uiicons = {}
 size = (800, 600)
+symbuffer = 0
 origin = (size[0]//3 - (size[0]//3)%symsize, size[1]//3 - (size[1]//3)%symsize)
 tileoffset = [0,0]
 screen = None
@@ -73,7 +74,7 @@ def reload_sym_images():
 		if key.endswith("_"):
 			key = key[:-1]
 
-		symbols[key] = pygame.transform.smoothscale(pygame.image.load(symdir + filename), (symsize,symsize))
+		symbols[key] = pygame.transform.smoothscale(pygame.image.load(symdir + filename), (symsize-symbuffer,symsize-symbuffer))
 
 def get_sym_img(symbol):
 	try:
@@ -86,9 +87,9 @@ def get_sym_img(symbol):
 
 def draw_grid():
 	for i in range(screen.get_size()[0]//symsize + 1):
-		pygame.draw.line(screen, gridcolour, (i*symsize, 0), (i*symsize, screen.get_size()[1]), 2)
+		pygame.draw.line(screen, gridcolour, (i*symsize - 1, 0), (i*symsize - 1, screen.get_size()[1]), 2)
 	for i in range(screen.get_size()[1]//symsize + 1):
-		pygame.draw.line(screen, gridcolour, (0, i*symsize), (screen.get_size()[0], i*symsize), 2)
+		pygame.draw.line(screen, gridcolour, (0, i*symsize - 1), (screen.get_size()[0], i*symsize - 1), 2)
 
 	for i in range(-1, screen.get_size()[0]//(symsize*5) + 1):
 		for j in range(-1, screen.get_size()[1]//(symsize*5) + 1):
@@ -98,8 +99,8 @@ def display_tape():
 	draw_grid()
 
 	for point in mcontext.tape:
-		coords = (origin[0] + (tileoffset[0] + point[0])*symsize,
-				  origin[1] + (tileoffset[1] + point[1])*symsize)
+		coords = (origin[0] + (tileoffset[0] + point[0])*symsize + symbuffer,
+				  origin[1] + (tileoffset[1] + point[1])*symsize + symbuffer)
 		screen.blit(get_sym_img(mcontext.tape[point]), coords)
 
 	if display_machines:
@@ -147,20 +148,20 @@ def handle_events():
 				symsize = symsize//2 if symsize >= 4 else symsize
 				reload_sym_images()
 			elif event.key == K_RIGHTBRACKET:
-				symsize = symsize*2 if symsize < 128 else symsize
+				symsize = symsize*2 if symsize < 64 else symsize
 				reload_sym_images()
 			elif event.key == K_ESCAPE:
 				sys.exit()
 			elif event.key == K_RETURN:
 				running = not running
 			elif event.key == K_UP:
-				tileoffset[1] += 64//symsize + 1
+				tileoffset[1] += 64//symsize
 			elif event.key == K_DOWN:
-				tileoffset[1] -= 64//symsize + 1
+				tileoffset[1] -= 64//symsize
 			elif event.key == K_RIGHT:
-				tileoffset[0] -= 64//symsize + 1
+				tileoffset[0] -= 64//symsize
 			elif event.key == K_LEFT:
-				tileoffset[0] += 64//symsize + 1
+				tileoffset[0] += 64//symsize
 			elif event.key == K_s:
 				running = True
 				s_step()

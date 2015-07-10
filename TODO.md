@@ -1,4 +1,6 @@
 # TODO
+* Allow machines to spawn multiple children in a single timestep
+* Finish tree grower
 * Merge symbols into a single file, split individuals out at load time
 * Transparent symbol backgrounds
 * Machine detail box overflow fix 
@@ -13,4 +15,3 @@
 * Run a simple TM (e.g. Unary Adder?) with the 1D UTM inside the 2D UTM
 * Think of more things/what to add next
 * Multi-tape machines, multi-head machines
-* Allow machines to spawn multiple children in a single timestep

@@ -58,7 +58,7 @@ lancontext.create_machine("machines/automata/polylangton.tm", (0,0), None, 10000
 arbcontext = m.MachineContext(m.Plane())
 arbcontext.create_machine("machines/tree.tm")
 
-d.init(arbcontext)
+d.init(subcontext)
 d.running = False
 
 d.run()
