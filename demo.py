@@ -55,7 +55,11 @@ chacontext.create_machine("machines/snailchase.tm")
 lancontext = m.MachineContext(m.Plane())
 lancontext.create_machine("machines/automata/langton.tm", (0,0), "quad", 1000000)
 
-d.init(lancontext)
+# Random Walk
+rancontext = m.MachineContext(m.Plane())
+rancontext.create_machine("machines/randwalk.tm")
+
+d.init(rancontext)
 d.running = False
 
 d.run()

@@ -126,7 +126,7 @@ def display_UI():
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
 
 def handle_events():
-	global running, simrate, timestep, display_machines, mcontext, symsize
+	global running, simrate, timestep, display_machines, mcontext, symsize, elapsed
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -171,6 +171,7 @@ def handle_events():
 				display_machines = not display_machines
 			elif event.key == K_r:
 				mcontext = mcontext.restore()
+				tileoffset[0] = tileoffset[1] = elapsed = 0
 
 
 def render():
