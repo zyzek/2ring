@@ -1,6 +1,6 @@
 # TODO
-* Allow machines to spawn multiple children in a single timestep
-* Finish tree grower
+* Way of defining, examining machines with, e.g. symbol names longer than 1 character
+* Generalise non-determinism
 * Merge symbols into a single file, split individuals out at load time
 * Transparent symbol backgrounds
 * Machine detail box overflow fix 
@@ -8,10 +8,8 @@
 * Machine switching
 * Allow multiple machines to be defined in one file, collapse, e.g., composite-subtract into a single file
 * Realtime tape manipulation
+* Simple symbol-editing tools
 * Per-machine tile sets
 * Add scanned symbol wildcard to rule format
-* Build a universal TM in 2 Dimensions
-* Build a universal TM in 1 Dimension
-* Run a simple TM (e.g. Unary Adder?) with the 1D UTM inside the 2D UTM
 * Think of more things/what to add next
 * Multi-tape machines, multi-head machines

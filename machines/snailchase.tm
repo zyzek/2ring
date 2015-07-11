@@ -134,12 +134,11 @@ left > -> right ^ R
 right > -> right ^ R
 
 # Egg
-up * -> up ~ U snailchase.tm
-down * -> down ~ D snailchase.tm
-left * -> left ~ L snailchase.tm
-right * -> right ~ R snailchase.tm
+up * -> up ~ U * snailchase.tm
+down * -> down ~ D * snailchase.tm
+left * -> left ~ L * snailchase.tm
+right * -> right ~ R * snailchase.tm
 up oO0 -> up ~ U
 down oO0 -> down ~ D
 left oO0 -> left ~ L
 right oO0 -> right ~ R
-

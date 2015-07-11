@@ -29,8 +29,8 @@
 
 checkcellRD
 
-checkcellRD `. -> deadcellRD ~ N optneighbours.tm
-checkcellRD @* -> livecellRD ~ N optneighbours.tm
+checkcellRD `. -> deadcellRD ~ N * optneighbours.tm
+checkcellRD @* -> livecellRD ~ N * optneighbours.tm
 checkcellRD # -> checkcellLD ~ DL
 checkcellRD < -> checkcellLU ~ L
 
@@ -43,8 +43,8 @@ livecellRD 23 -> checkcellRD @ R
 livecellRD 0145678 -> checkcellRD . R
 
 
-checkcellLD `. -> deadcellLD ~ N optneighbours.tm
-checkcellLD @* -> livecellLD ~ N optneighbours.tm
+checkcellLD `. -> deadcellLD ~ N * optneighbours.tm
+checkcellLD @* -> livecellLD ~ N * optneighbours.tm
 checkcellLD # -> checkcellRD ~ DR
 
 deadcellLD `. -> deadcellLD ~ N
@@ -56,8 +56,8 @@ livecellLD 23 -> checkcellLD @ L
 livecellLD 0145678 -> checkcellLD . L
 
 
-checkcellRU `. -> deadcellRU ~ N optneighbours.tm
-checkcellRU @* -> livecellRU ~ N optneighbours.tm
+checkcellRU `. -> deadcellRU ~ N * optneighbours.tm
+checkcellRU @* -> livecellRU ~ N * optneighbours.tm
 checkcellRU # -> checkcellLU ~ UL
 
 deadcellRU `. -> deadcellRU ~ N
@@ -69,8 +69,8 @@ livecellRU 23 -> checkcellRU @ R
 livecellRU 0145678 -> checkcellRU . R
 
 
-checkcellLU `. -> deadcellLU ~ N optneighbours.tm
-checkcellLU @* -> livecellLU ~ N optneighbours.tm
+checkcellLU `. -> deadcellLU ~ N * optneighbours.tm
+checkcellLU @* -> livecellLU ~ N * optneighbours.tm
 checkcellLU # -> checkcellRU ~ UR
 checkcellLU > -> checkcellRD ~ R
 

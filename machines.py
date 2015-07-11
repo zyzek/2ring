@@ -3,6 +3,7 @@ import time, copy, random
 MAXLIFE = 100000
 MAXMACHINES = 30
 
+
 class Plane(object):
     """
     p should be a list of strings, such that
@@ -59,15 +60,21 @@ class Plane(object):
 
         return out
 
+class SpawnInfo(object):
+    def __init__(self, path, offset=(0,0), state=None):
+        self.path = path
+        self.offset = offset
+        self.state = state
+
+    def __repr__(self):
+        return "<" + str(self.path) + ", " + str(self.offset) + ", " + str(self.state) + ">"
 
 class Rule(object):
-    def __init__(self, newstate='q0', newsym=['E'], direction='L', spawn=False, sp_off=(0,0), sp_state=None):
-        self.newsym = newsym
+    def __init__(self, newstate='q0', newsym=['E'], direction='L', spawn=[]):
         self.newstate = newstate
+        self.newsym = newsym
         self.direction = direction
         self.spawn = spawn
-        self.sp_off = sp_off
-        self.sp_state = sp_state
 
     def __repr__(self):
         return "(" + str(self.newstate) + ", " + str(self.newsym) + ", " + self.direction + ")" 
@@ -130,6 +137,7 @@ class MachineContext(object):
                 if state:
                     youngling.state = state
                 youngling.context = self
+                break
 
         if not youngling:
             youngling = parse_machine(path, lifespan)
@@ -140,8 +148,8 @@ class MachineContext(object):
                 youngling.state = state
             youngling.context = self
                 
-        self.running.insert(self.running.index(parent) if parent else 0, youngling)
         youngling.color = self.get_machine_col(youngling)
+        self.running.insert(self.running.index(parent) if parent else 0, youngling)
 
     def add_machine(self, machine):
         if len(self.running) > MAXMACHINES: 
@@ -157,7 +165,7 @@ class MachineContext(object):
             machine.advance()
             if machine.halted:
                 self.halted.append(machine)
-                del self.running[i]
+                self.running.remove(machine)
     
     def run(self, display=True):
         while self.running: 
@@ -166,6 +174,7 @@ class MachineContext(object):
                 print(self.running)
                 print(self.tape, end='\n\n')
                 time.sleep(self.delay)
+
 
 class Machine(object):
     def __init__(self, path, rules, start='q0', lifespan=MAXLIFE, tape=None):
@@ -205,15 +214,9 @@ class Machine(object):
 
     def down(self):
         self.pos = (self.pos[0], self.pos[1] + 1)
-
-    def linleft(self):
-        self.pos -= 1
-
-    def linright(self):
-        self.pos += 1
     
-    def get_offset_pos(self, op):
-        return (self.pos[0]+op.sp_off[0], self.pos[1]+op.sp_off[1])
+    def get_offset_pos(self, off):
+        return (self.pos[0]+off[0], self.pos[1]+off[1])
 
     def move_sequence(self, moves):
         for m in moves:
@@ -239,23 +242,13 @@ class Machine(object):
         self.tape[self.pos] = random.choice(op.newsym)
         self.state = op.newstate
 
-        if op.spawn:
-            offpath = "/".join(self.path.split('/')[:-1] + [op.spawn])
-
-            offspring = parse_machine(offpath, self.lifespan - self.i)
-            offspring.tape = self.tape
-            offspring.pos = self.get_offset_pos(op)
+        for sp in op.spawn:
+            offpath = "/".join(self.path.split('/')[:-1] + [sp.path])            
+            self.context.create_machine(offpath,
+                                        self.get_offset_pos(sp.offset), 
+                                        sp.state if sp.state else None, 
+                                        self.lifespan - self.i, self)
             
-            if not self.context:
-                self.context = MachineContext(self.tape)
-                self.context.delay = self.delay
-                self.context.add_machine(self)
-                self.context.create_machine(offpath, self.get_offset_pos(op), op.sp_state if op.sp_state else None, self.lifespan - self.i, self)
-                self.move_sequence(op.direction)
-                self.context.run()
-            else:
-                self.context.create_machine(offpath, self.get_offset_pos(op), op.sp_state if op.sp_state else None, self.lifespan - self.i, self)
-                
         self.move_sequence(op.direction)
 
         if self.i >= self.lifespan:
@@ -289,6 +282,20 @@ class Machine(object):
     def __repr__(self):
         return "<" + self.path.split('/')[-1] + ": " + self.state + ", " + str(self.pos) + ">" 
 
+
+def get_n_spawn_args(rule, index):
+    if index >= len(rule) or rule[index] != "*":
+        return 0
+
+    args = 0
+
+    for i in range(index + 1, min(len(rule), index + 4)):
+        if rule[i] == "*":
+            return args
+        args += 1
+
+    return args
+
 def parse_machine(path, maxiter=MAXLIFE):
     btck_to_none = lambda c: None if c == '`' else c
 
@@ -305,13 +312,28 @@ def parse_machine(path, maxiter=MAXLIFE):
         while rule != '':
             if rule != '\n' and rule.strip()[0] != '#':
                 rule = rule.strip().split()
+                spawn = []
+
+                for i in range(6, len(rule)):
+                    if rule[i] == "*":
+                        n_args = get_n_spawn_args(rule, i)
+                        args = []
+                        
+                        if n_args >= 1:
+                            args += [rule[i+1]]
+                        if n_args >= 2:
+                            args += [tuple(int(x) for x in rule[i+2].split(','))]
+                        if n_args >= 3:
+                            args += [rule[i+3]]
+
+                        if args:
+                            spawn.append(SpawnInfo(*args))
+
                 for s in rule[1]:
                     rules[(rule[0], btck_to_none(s))] = Rule(rule[3], 
                                                              [btck_to_none(s) if c == '~' else btck_to_none(c) for c in rule[4]], 
                                                              rule[5], 
-                                                             False if len(rule) < 7 else rule[6],
-                                                             (0,0) if len(rule) < 8 else [int(x) for x in rule[7].split(',')],
-                                                             None if len(rule) < 9 else rule[8])
+                                                             spawn)
 
             rule = f.readline()
 

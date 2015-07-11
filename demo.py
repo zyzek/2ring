@@ -53,12 +53,9 @@ chacontext.create_machine("machines/snailchase.tm")
 
 # Langton's ant, in quadruplicate.
 lancontext = m.MachineContext(m.Plane())
-lancontext.create_machine("machines/automata/polylangton.tm", (0,0), None, 1000000)
+lancontext.create_machine("machines/automata/langton.tm", (0,0), "quad", 1000000)
 
-arbcontext = m.MachineContext(m.Plane())
-arbcontext.create_machine("machines/tree.tm")
-
-d.init(subcontext)
+d.init(lancontext)
 d.running = False
 
 d.run()
