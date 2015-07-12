@@ -59,7 +59,7 @@ lancontext.create_machine("machines/automata/langton.tm", (0,0), "quad", 1000000
 rancontext = m.MachineContext(m.Plane())
 rancontext.create_machine("machines/randwalk.tm")
 
-d.init(rancontext)
+d.init(concontext)
 d.running = False
 
 d.run()

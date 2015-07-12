@@ -1,4 +1,9 @@
 import machines
+
+from os.path import relpath
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 import pygame, sys, os, time
 from pygame.locals import *
 
@@ -25,6 +30,8 @@ font = None
 symsize = 16
 symbols = {}
 uisize = 32
+fontsize = uisize//2
+iconsize = (3*uisize)//4
 uiicons = {}
 size = (800, 600)
 symbuffer = 0
@@ -52,6 +59,7 @@ symdict["|"] = "pipe"
 
 def init(initcontext):
 	global screen, symbols, clock, font, mcontext, last_time
+	Tk().withdraw()
 	pygame.init()
 
 	mcontext = initcontext
@@ -59,14 +67,16 @@ def init(initcontext):
 
 	clock = pygame.time.Clock()
 	last_time = pygame.time.get_ticks()
-	font = pygame.font.Font(None, uisize//2)
+	font = pygame.font.Font(None, fontsize)
 
 	screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 	reload_sym_images()
 
-	uiicons["runrect"] = pygame.Rect(screen.get_size()[0] - uisize, 0, uisize, uisize)
-	uiicons["runimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "running.bmp"), (uisize,uisize))
-	uiicons["stopimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "stopped.bmp"), (uisize,uisize))
+	uiicons["runrect"] = pygame.Rect(screen.get_size()[0] - iconsize, 0, iconsize, iconsize)
+	uiicons["runimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "running.bmp"), (iconsize,iconsize))
+	uiicons["stopimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "stopped.bmp"), (iconsize,iconsize))
+	uiicons["filerect"] = pygame.Rect(screen.get_size()[0] - iconsize*2, 0, iconsize, iconsize)
+	uiicons["fileimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "file.png"), (iconsize,iconsize))
 
 def reload_sym_images():
 	for filename in os.listdir(symdir):
@@ -122,8 +132,18 @@ def display_tape():
 
 def display_UI():
 	screen.blit(font.render("Target sim rate: " + str(int(simrate) if simrate < maxsimrate else "MAX") + " ticks/s", 1, white), (0,0))
-	screen.blit(font.render("Elapsed ticks: " + str(elapsed), 1, white), (0, uisize//2))
+	screen.blit(font.render("Elapsed ticks: " + str(elapsed), 1, white), (0, fontsize))
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
+	screen.blit(uiicons["fileimg"], uiicons["filerect"])
+
+def load_machine_dialog():
+	try:
+		running = False
+		tileoffset[0] = tileoffset[1] = elapsed = 0
+		mcontext = machines.MachineContext(machines.Plane())
+		mcontext.create_machine(relpath(askopenfilename()))
+	except:
+		pass
 
 def handle_events():
 	global running, simrate, timestep, display_machines, mcontext, symsize, elapsed
@@ -136,6 +156,8 @@ def handle_events():
 			if event.button == 1:
 				if uiicons["runrect"].collidepoint(event.pos):
 					running = not running
+				elif uiicons["filerect"].collidepoint(event.pos):
+					load_machine_dialog()
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_EQUALS:
@@ -172,6 +194,8 @@ def handle_events():
 			elif event.key == K_r:
 				mcontext = mcontext.restore()
 				tileoffset[0] = tileoffset[1] = elapsed = 0
+			elif event.key == K_f:
+				load_machine_dialog()
 
 
 def render():
@@ -180,6 +204,7 @@ def render():
 	display_tape()
 	display_UI()
 	pygame.display.flip()
+	#pygame.image.save(screen, "screenshot/" + str(elapsed) + ".png")
 
 
 def s_step():
