@@ -1,7 +1,7 @@
 import machines as m
 import display as d
 import time
-
+"""
 # A Unary Adder in One Dimension
 unacontext = m.MachineContext(m.Plane(['0000100000']))
 unacontext.create_machine("machines/arithmetic/unaryadder.tm")
@@ -50,15 +50,15 @@ course = m.Plane(
 		  "                └       (       ┘"])
 chacontext = m.MachineContext(course)
 chacontext.create_machine("machines/snailchase.tm")
-
+"""
 # Langton's ant, in quadruplicate.
 lancontext = m.MachineContext(m.Plane())
 lancontext.create_machine("machines/automata/langton.tm", (0,0), "quad", 1000000)
-
+"""
 # Random Walk
 rancontext = m.MachineContext(m.Plane())
 rancontext.create_machine("machines/randwalk.tm")
-
+"""
 d.init(lancontext)
 d.running = False
 

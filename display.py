@@ -144,6 +144,7 @@ def load_machine_dialog():
 		tileoffset[0] = tileoffset[1] = elapsed = 0
 		mcontext = machines.MachineContext(machines.Plane())
 		mcontext.create_machine(relpath(askopenfilename()))
+		mcontext.checkpoint()
 	except:
 		pass
 
