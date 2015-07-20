@@ -1,4 +1,5 @@
-import time, copy, random
+import time, copy, random, os
+from os.path import normpath
 
 MAXLIFE = 100000
 MAXMACHINES = 30
@@ -62,7 +63,7 @@ class Plane(object):
 
 class SpawnInfo(object):
     def __init__(self, path, offset=(0,0), state=None):
-        self.path = path
+        self.path = normpath(path)
         self.offset = offset
         self.state = state
 
@@ -103,6 +104,7 @@ class MachineContext(object):
                 (mhash//0x10000)%0x100)
 
     def create_machine(self, path, pos=None, state=None, lifespan=MAXLIFE, parent=None):
+        path = normpath(path)
         if len(self.running) > MAXMACHINES: 
             return
 
@@ -178,7 +180,7 @@ class MachineContext(object):
 
 class Machine(object):
     def __init__(self, path, rules, start='q0', lifespan=MAXLIFE, tape=None):
-        self.path = path
+        self.path = normpath(path)
         self.rules = rules
         self.start = start
         self.state = start
@@ -243,7 +245,7 @@ class Machine(object):
         self.state = op.newstate
 
         for sp in op.spawn:
-            offpath = "/".join(self.path.split('/')[:-1] + [sp.path])            
+            offpath = os.sep.join(self.path.split(os.sep)[:-1] + [sp.path])            
             self.context.create_machine(offpath,
                                         self.get_offset_pos(sp.offset), 
                                         sp.state if sp.state else None, 
@@ -280,7 +282,7 @@ class Machine(object):
         print(self.tape, end='\n\n')
 
     def __repr__(self):
-        return "<" + self.path.split('/')[-1] + ": " + self.state + ", " + str(self.pos) + ">" 
+        return "<" + self.path.split(os.sep)[-1] + ": " + self.state + ", " + str(self.pos) + ">" 
 
 
 def get_n_spawn_args(rule, index):
@@ -297,6 +299,7 @@ def get_n_spawn_args(rule, index):
     return args
 
 def parse_machine(path, maxiter=MAXLIFE):
+    path = normpath(path)
     btck_to_none = lambda c: None if c == '`' else c
 
     with open(path, 'r', encoding='utf-8') as f:

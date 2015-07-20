@@ -1,5 +1,6 @@
 # TODO
-* accumulator, time fix, robust resetting, file loading working
+* Tape Loading dialogue
+* accumulator, time fix, robust resetting
 * Way of defining, examining machines with, e.g. symbol names longer than 1 character
 * Generalise non-determinism
 * Merge symbols into a single file, split individuals out at load time

@@ -1,5 +1,6 @@
 import machines
 
+import os
 from os.path import relpath
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
@@ -7,8 +8,8 @@ from tkinter.filedialog import askopenfilename
 import pygame, sys, os, time
 from pygame.locals import *
 
-imgdir = "img/"
-symdir = "img/symbols/"
+imgdir = "img" + os.sep
+symdir = "img" + os.sep + "symbols" + os.sep
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -123,7 +124,7 @@ def display_tape():
 
 			mrect = pygame.Rect(m*110 + 2, screen.get_size()[1]-(uisize+5), 100, uisize)
 			pygame.draw.rect(screen, black, mrect, 0)
-			screen.blit(font.render(machine.path.split("/")[-1], 1, white), (m*110 + 5, screen.get_size()[1]-uisize))
+			screen.blit(font.render(machine.path.split(os.sep)[-1], 1, white), (m*110 + 5, screen.get_size()[1]-uisize))
 			screen.blit(font.render(str(machine.pos) + " " + str(machine.state), 1, white), (m*110 + 5, screen.get_size()[1]-uisize//2))
 			pygame.draw.rect(screen, machine.color, mrect, 2)
 
@@ -137,6 +138,7 @@ def display_UI():
 	screen.blit(uiicons["fileimg"], uiicons["filerect"])
 
 def load_machine_dialog():
+	global running, mcontext, tileoffset
 	try:
 		running = False
 		tileoffset[0] = tileoffset[1] = elapsed = 0
