@@ -88,6 +88,11 @@ class MachineContext(object):
         self.halted = []
         self.delay = 0
 
+    def set_tape(self, tape):
+        self.tape = tape
+        for m in self.running + self.halted:
+            m.tape = self.tape
+
     def checkpoint(self):
         self.copy = copy.deepcopy(self)
 
@@ -297,6 +302,18 @@ def get_n_spawn_args(rule, index):
         args += 1
 
     return args
+
+
+def parse_tape(path):
+    with open(normpath(path), 'r', encoding='utf-8') as f:
+        zero = [int(x) for x in f.readline().split(',')]
+        if len(zero) != 2:
+            zero = [0,0]
+
+        tape = f.read().split('\n')
+
+    return Plane(tape, zero)
+
 
 def parse_machine(path, maxiter=MAXLIFE):
     path = normpath(path)

@@ -78,6 +78,9 @@ def init(initcontext):
 	uiicons["stopimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "stopped.bmp"), (iconsize,iconsize))
 	uiicons["filerect"] = pygame.Rect(screen.get_size()[0] - iconsize*2, 0, iconsize, iconsize)
 	uiicons["fileimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "file.png"), (iconsize,iconsize))
+	uiicons["tapeimg"] = pygame.transform.smoothscale(pygame.image.load(imgdir + "tape.png"), (iconsize,iconsize))
+	uiicons["tapeloadrect"] = pygame.Rect(screen.get_size()[0] - iconsize*3, 0, iconsize, iconsize)
+	
 
 def reload_sym_images():
 	for filename in os.listdir(symdir):
@@ -122,10 +125,10 @@ def display_tape():
 								symsize, symsize)
 			pygame.draw.rect(screen, machine.color, mrect, 2)
 
-			mrect = pygame.Rect(m*110 + 2, screen.get_size()[1]-(uisize+5), 100, uisize)
+			mrect = pygame.Rect(m*uisize*4 + 2, screen.get_size()[1]-(uisize+5), uisize*4 - 10, uisize)
 			pygame.draw.rect(screen, black, mrect, 0)
-			screen.blit(font.render(machine.path.split(os.sep)[-1], 1, white), (m*110 + 5, screen.get_size()[1]-uisize))
-			screen.blit(font.render(str(machine.pos) + " " + str(machine.state), 1, white), (m*110 + 5, screen.get_size()[1]-uisize//2))
+			screen.blit(font.render(machine.path.split(os.sep)[-1], 1, white), (m*uisize*4 + 5, screen.get_size()[1]-uisize))
+			screen.blit(font.render(str(machine.pos) + " " + str(machine.state), 1, white), (m*uisize*4 + 5, screen.get_size()[1]-uisize//2))
 			pygame.draw.rect(screen, machine.color, mrect, 2)
 
 			m += 1
@@ -136,17 +139,39 @@ def display_UI():
 	screen.blit(font.render("Elapsed ticks: " + str(elapsed), 1, white), (0, fontsize))
 	screen.blit(uiicons["runimg"] if running else uiicons["stopimg"], uiicons["runrect"])
 	screen.blit(uiicons["fileimg"], uiicons["filerect"])
+	screen.blit(uiicons["tapeimg"], uiicons["tapeloadrect"])
+
+def load_tape_dialog():
+	global running
+	try:
+		running = False
+		options = {}
+		options['title'] = 'Load Tape'
+		options['defaultextension'] = '.tp'
+		options['filetypes'] = [('tapes', '.tp'), ('all files', '.*')]
+		options['initialdir'] = 'machines'
+
+		mcontext.set_tape(machines.parse_tape(relpath(askopenfilename(**options))))
+		mcontext.checkpoint()
+	except Exception as e:
+		print(e)
 
 def load_machine_dialog():
 	global running, mcontext, tileoffset
 	try:
+		options = {}
+		options['title'] = 'Load Machine'
+		options['defaultextension'] = '.tm'
+		options['filetypes'] = [('machines', '.tm'), ('all files', '.*')]
+		options['initialdir'] = 'machines'
+		
 		running = False
 		tileoffset[0] = tileoffset[1] = elapsed = 0
 		mcontext = machines.MachineContext(machines.Plane())
-		mcontext.create_machine(relpath(askopenfilename()))
+		mcontext.create_machine(relpath(askopenfilename(**options)))
 		mcontext.checkpoint()
-	except:
-		pass
+	except Exception as e:
+		print(e)
 
 def handle_events():
 	global running, simrate, timestep, display_machines, mcontext, symsize, elapsed
@@ -161,6 +186,9 @@ def handle_events():
 					running = not running
 				elif uiicons["filerect"].collidepoint(event.pos):
 					load_machine_dialog()
+				elif uiicons["tapeloadrect"].collidepoint(event.pos):
+					load_tape_dialog()
+					
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_EQUALS:
@@ -194,11 +222,15 @@ def handle_events():
 				running = False
 			elif event.key == K_m:
 				display_machines = not display_machines
+			elif event.key == K_c:
+				mcontext.checkpoint()
 			elif event.key == K_r:
 				mcontext = mcontext.restore()
 				tileoffset[0] = tileoffset[1] = elapsed = 0
 			elif event.key == K_f:
 				load_machine_dialog()
+			elif event.key == K_t:
+				load_tape_dialog()
 
 
 def render():

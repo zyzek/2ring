@@ -1,5 +1,5 @@
 # TODO
-* Tape Loading dialogue
+* Improve loading dialogues 
 * accumulator, time fix, robust resetting
 * Way of defining, examining machines with, e.g. symbol names longer than 1 character
 * Generalise non-determinism
