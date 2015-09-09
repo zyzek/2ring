@@ -57,6 +57,8 @@ symdict['"'] = "dquote"
 symdict["?"] = "qmark"
 symdict[";"] = "semicolon"
 symdict["|"] = "pipe"
+symdict["\\"] = "bslash"
+symdict["/"] = "slash"
 
 def init(initcontext):
 	global screen, symbols, clock, font, mcontext, last_time
@@ -107,7 +109,7 @@ def draw_grid():
 
 	for i in range(-1, screen.get_size()[0]//(symsize*5) + 1):
 		for j in range(-1, screen.get_size()[1]//(symsize*5) + 1):
-			pygame.draw.circle(screen, gridhighlight, ((5*i + tileoffset[0]%5)*symsize + 1, (5*j+tileoffset[1]%5)*symsize + 1), 2)
+			pygame.draw.circle(screen, gridhighlight, ((5*i + tileoffset[0]%5)*symsize, (5*j+tileoffset[1]%5)*symsize), 2)
 
 def display_tape():
 	draw_grid()

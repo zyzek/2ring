@@ -23,16 +23,20 @@ concontext.create_machine("machines/automata/conway/conway.tm", lifespan=100000)
 # A dumb tail-chaser.
 chacontext = m.MachineContext(m.parse_tape("machines/misc/snailchase.tp"))
 chacontext.create_machine("machines/misc/snailchase.tm")
-
+"""
 # Langton's ant, in quadruplicate.
 lancontext = m.MachineContext(m.Plane())
 lancontext.create_machine("machines/automata/langton.tm", (0,0), "quad", 1000000)
 """
-# Random Walk
+# Random Walker
 rancontext = m.MachineContext(m.Plane())
 rancontext.create_machine("machines/misc/randwalk.tm")
 
+# Tree Grower
+treecontext = m.MachineContext(m.Plane())
+treecontext.create_machine("machines/misc/tree.tm")
+"""
 
-d.init(rancontext)
+d.init(lancontext)
 d.running = False
 d.run()
