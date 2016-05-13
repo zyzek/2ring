@@ -1,6 +1,6 @@
 # Conway's Game of Life
-# A dead cell with three live optneighbours becomes live;
-# A live cell with two or three live optneighbours lives on;
+# A dead cell with three live neighbours becomes live;
+# A live cell with two or three live neighbours lives on;
 # All other configurations die or remain dead.
 #
 # In this CA, each cell actually stores the info of the previous two generations
